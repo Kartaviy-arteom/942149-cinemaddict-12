@@ -294,7 +294,7 @@ render(filmList, createShowMoreBtn(), `beforeend`);
 render(filmsElement, createExtraListTemplate(TOP_RATED_TITLE), `beforeend`);
 render(filmsElement, createExtraListTemplate(MOST_COMMENTED_TITLE), `beforeend`);
 
-const extraLists = filmsElement.querySelectorAll(`.films-list--extra`).forEach(el => {
+filmsElement.querySelectorAll(`.films-list--extra`).forEach((el) => {
   const filmContainer = el.querySelector(`.films-list__container`);
   for (let i = 0; i < EXTRA_LIST_CARD_QUANTITY; i++) {
     render(filmContainer, createFilmCard(), `beforeend`);
