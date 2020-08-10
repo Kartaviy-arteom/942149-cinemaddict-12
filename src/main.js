@@ -7,6 +7,7 @@ import {createShowMoreBtn} from "./view/show-more-btn.js";
 import {createExtraListTemplate} from "./view/extra-list.js";
 import {createFooterStatisticsValueTemplate} from "./view/footer-statistics-value.js";
 import {createPopupTemplate} from "./view/popup.js";
+import {generateFilmData} from "./mock/film-data.js";
 
 const CARD_QUANTITY = 5;
 const EXTRA_LIST_CARD_QUANTITY = 2;
@@ -16,6 +17,8 @@ const MOST_COMMENTED_TITLE = `Most commented`;
 const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
+
+const films = new Array(CARD_QUANTITY).fill().map(generateFilmData);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -31,7 +34,7 @@ const filmList = filmsElement.querySelector(`.films-list`);
 const filmsContainer = filmList.querySelector(`.films-list__container`);
 
 for (let i = 0; i < CARD_QUANTITY; i++) {
-  render(filmsContainer, createFilmCard(), `beforeend`);
+  render(filmsContainer, createFilmCard(films[i]), `beforeend`);
 }
 render(filmList, createShowMoreBtn(), `beforeend`);
 render(filmsElement, createExtraListTemplate(TOP_RATED_TITLE), `beforeend`);
@@ -40,11 +43,11 @@ render(filmsElement, createExtraListTemplate(MOST_COMMENTED_TITLE), `beforeend`)
 filmsElement.querySelectorAll(`.films-list--extra`).forEach((el) => {
   const filmContainer = el.querySelector(`.films-list__container`);
   for (let i = 0; i < EXTRA_LIST_CARD_QUANTITY; i++) {
-    render(filmContainer, createFilmCard(), `beforeend`);
+    render(filmContainer, createFilmCard(generateFilmData()), `beforeend`);
   }
 });
 
 render(footerStatisticsElement, createFooterStatisticsValueTemplate(), `beforeend`);
-render(document.body, createPopupTemplate(), `beforeend`);
+render(document.body, createPopupTemplate(films[0]), `beforeend`);
 
-document.querySelector(`.film-details`).style.display = `none`;
+// document.querySelector(`.film-details`).style.display = `none`;

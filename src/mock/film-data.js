@@ -1,4 +1,5 @@
 import {getRandomInteger} from "../utils.js";
+import {randomArrayFromParrentArray} from "../utils.js";
 
 const generateFilmTitle = () => {
   const filmsTitles = [
@@ -16,17 +17,17 @@ const generateFilmTitle = () => {
   const randomFilmIndex = getRandomInteger(0, filmsTitles.length - 1);
 
   return filmsTitles[randomFilmIndex];
-}
+};
 
 const generatePoster = () => {
-  const postersName[] = [
-  `made-for-each-other`,
-  `popeye-meets-sinbad`,
-  `sagebrush-trail`,
-  `santa-claus-conquers-the-martians`,
-  `the-dance-of-life`,
-  `the-great-flamarion`,
-  `the-man-with-the-golden-arm`,
+  const postersName = [
+    `made-for-each-other.png`,
+    `popeye-meets-sinbad.png`,
+    `sagebrush-trail.jpg`,
+    `santa-claus-conquers-the-martians.jpg`,
+    `the-dance-of-life.jpg`,
+    `the-great-flamarion.jpg`,
+    `the-man-with-the-golden-arm.jpg`,
   ];
 
   const randomPosterIndex = getRandomInteger(0, postersName.length - 1);
@@ -35,17 +36,17 @@ const generatePoster = () => {
 };
 
 const generateDescription = () => {
-  const descriptionTemplate = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`
+  const descriptionTemplate = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
   const descriptionSentences = descriptionTemplate.split(`. `);
   let finalDescription = [];
 
-  const randomQuantitySentence = getRandomInteger(0, descriptionSentences.length);
-
-  for (const i = 0; i < randomQuantitySentence; i ++) {
-    finalDescription.push(descriptionSentences[getRandomInteger(0, descriptionSentences.length - 1)]);
+  for (let i = 0; i < 5; i++) {
+    if ((!!getRandomInteger(0, 1)) || (finalDescription.length === 0)) {
+      finalDescription.push(descriptionSentences[getRandomInteger(0, descriptionSentences.length - 1)]);
+    }
   }
 
-  return finalDescription.join(`. `);
+  return `${finalDescription.join(`. `)}.`;
 };
 
 const generateRating = () => {
@@ -107,19 +108,81 @@ const generateAgeRate = () => {
   return rates[getRandomInteger(0, rates.length - 1)];
 };
 
+const generateGenre = () => {
+  const genres = [
+    `fiction`,
+    `documentary`,
+    `docufiction`,
+    `docudrama`,
+    `drama`,
+    `vampire films`,
+    `horror film`,
+  ];
+
+  return randomArrayFromParrentArray(genres);
+};
+
+const generateWriters = () => {
+  const writers = [
+    `Billy Wilder`,
+    `Ethan Coen and Joel Coen`,
+    `Robert Towne`,
+    `Quentin Tarantino`,
+    `Francis Ford Coppola`,
+    `William Goldman`,
+    `Charlie Kaufman`,
+    `Woody Allen`,
+  ];
+
+  return writers[getRandomInteger(0, writers.length - 1)];
+};
+
+const generateComments = () => {
+  const emojis = [`smile`, `sleeping`, `puke`, `angry`];
+  const commentTexts = [
+    `Interesting setting and a good cast`,
+    `Booooooooooring`,
+    `Very very old. Meh`,
+    `Almost two hours? Seriously?`,
+  ];
+  const authors = [
+    `Tim Macoveev`,
+    `John Doe`,
+    `Abigail Carmi`,
+    `Nathaniel Shoshannah`,
+    `Amnon Bithiah`
+  ];
+  const commentsQuantity = getRandomInteger(0, 5);
+  let comments = [];
+
+  for (let i = 0; i < commentsQuantity; i++) {
+    const comment = {
+      emoji: emojis[getRandomInteger(0, emojis.length - 1)],
+      comment: commentTexts[getRandomInteger(0, commentTexts.length - 1)],
+      author: authors[getRandomInteger(0, authors.length - 1)],
+      data: new Date(getRandomInteger(0, new Date().getTime())),
+    };
+    comments.push(comment);
+  }
+  return comments;
+};
+
 export const generateFilmData = () => {
   return {
     title: generateFilmTitle(),
     poster: generatePoster(),
     description: generateDescription(),
-    comments:,
+    comments: generateComments(),
     ratingValue: generateRating(),
-    productionYear: generateProductionYear(),
+    productionData: generateProductionYear(),
     duration: generateDuration(),
-    genre:,
+    genre: generateGenre(),
     director: generateDirector(),
-    writers:,
+    writers: generateWriters(),
     country: generateCountry(),
     ageRate: generateAgeRate(),
-  }
+    isInWatchList: !!(getRandomInteger(0, 1)),
+    isInWatched: !!(getRandomInteger(0, 1)),
+    isInFavorites: !!(getRandomInteger(0, 1)),
+  };
 };

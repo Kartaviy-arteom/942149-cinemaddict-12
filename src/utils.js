@@ -6,5 +6,15 @@ export const getRandomInteger = (a = 0, b = 1) => {
 };
 
 export const randomArrayFromParrentArray = (array) => {
-  return array.filter(element => {!!getRandomInteger(0,1)});
+  return array.filter(() => {
+    return !!(getRandomInteger(0, 1));
+  });
+};
+
+export const transformData = (data) => {
+  return `${data.getFullYear()}/${data.getMonth()}/${data.getDate()} ${data.getHours()}:${data.getMinutes}`;
+};
+
+export const humanizeDueDate = (dueDate) => {
+  return dueDate.toLocaleString(`en-GB`, {month: `long`, day: `numeric`, year: `numeric`});
 };
