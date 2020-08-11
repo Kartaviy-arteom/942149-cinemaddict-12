@@ -48,7 +48,7 @@ filmsElement.querySelectorAll(`.films-list--extra`).forEach((el) => {
   }
 });
 
-render(footerStatisticsElement, createFooterStatisticsValueTemplate(), `beforeend`);
+render(footerStatisticsElement, createFooterStatisticsValueTemplate(films), `beforeend`);
 render(document.body, createPopupTemplate(films[0]), `beforeend`);
 
 // document.querySelector(`.film-details`).style.display = `none`;
