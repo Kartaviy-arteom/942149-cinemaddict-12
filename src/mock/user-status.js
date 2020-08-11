@@ -1,7 +1,7 @@
 import {getRandomInteger} from "../utils.js";
 
 export const generateUserStatus = () => {
-  statuses = [
+  const statuses = [
     ``,
     `novice`,
     `fan`,

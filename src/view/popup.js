@@ -10,7 +10,6 @@ export const createPopupTemplate = (data) => {
 
   const createCommentListContent = () => {
     return comments.map((comment) =>
-      const commentData = transformData(comment.data);
       `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-smile">
@@ -19,7 +18,7 @@ export const createPopupTemplate = (data) => {
           <p class="film-details__comment-text">${comment.text}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${commentData}</span>
+            <span class="film-details__comment-day">${transformData(comment.data)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -34,7 +33,7 @@ export const createPopupTemplate = (data) => {
 
   const watchlistInputAttr = isInWatchList ? `checked` : ` `;
   const watchedInputAttr = isInWatched ? `checked` : ` `;
-  const favoritesInputAttr = isInFavorites  ? `checked` : ` `;
+  const favoritesInputAttr = isInFavorites ? `checked` : ` `;
 
   return (`
     <section class="film-details">

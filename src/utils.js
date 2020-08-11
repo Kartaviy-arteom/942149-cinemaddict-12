@@ -12,7 +12,7 @@ export const randomArrayFromParrentArray = (array) => {
 };
 
 export const transformData = (data) => {
-  return `${data.getFullYear()}/${data.getMonth()}/${data.getDate()} ${data.getHours()}:${data.getMinutes}`;
+  return `${data.getFullYear()}/${data.getMonth()}/${data.getDate()} ${data.getHours()}:${data.getMinutes()}`;
 };
 
 export const humanizeDueDate = (dueDate) => {
