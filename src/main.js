@@ -8,6 +8,7 @@ import {createExtraListTemplate} from "./view/extra-list.js";
 import {createFooterStatisticsValueTemplate} from "./view/footer-statistics-value.js";
 import {createPopupTemplate} from "./view/popup.js";
 import {generateFilmData} from "./mock/film-data.js";
+import {getRandomInteger} from "../utils.js";
 
 const CARD_QUANTITY = 5;
 const EXTRA_LIST_CARD_QUANTITY = 2;
@@ -43,7 +44,7 @@ render(filmsElement, createExtraListTemplate(MOST_COMMENTED_TITLE), `beforeend`)
 filmsElement.querySelectorAll(`.films-list--extra`).forEach((el) => {
   const filmContainer = el.querySelector(`.films-list__container`);
   for (let i = 0; i < EXTRA_LIST_CARD_QUANTITY; i++) {
-    render(filmContainer, createFilmCard(generateFilmData()), `beforeend`);
+    render(filmContainer, createFilmCard(films[getRandomInteger(0, films.length - 1)]), `beforeend`);
   }
 });
 
