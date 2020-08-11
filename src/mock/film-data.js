@@ -158,13 +158,27 @@ const generateComments = () => {
   for (let i = 0; i < commentsQuantity; i++) {
     const comment = {
       emoji: emojis[getRandomInteger(0, emojis.length - 1)],
-      comment: commentTexts[getRandomInteger(0, commentTexts.length - 1)],
+      text: commentTexts[getRandomInteger(0, commentTexts.length - 1)],
       author: authors[getRandomInteger(0, authors.length - 1)],
       data: new Date(getRandomInteger(0, new Date().getTime())),
     };
     comments.push(comment);
   }
   return comments;
+};
+
+const generateActors = () => {
+  const actors = [
+    `Clint Eastwood`,
+    `Laurence Olivier`,
+    `Sean Connery`,
+    `John Wayne`,
+    `Humphrey Bogart`,
+    `Cary Grant`,
+    `Spencer Tracy`
+  ];
+
+  return randomArrayFromParrentArray(actors);
 };
 
 export const generateFilmData = () => {
@@ -184,5 +198,6 @@ export const generateFilmData = () => {
     isInWatchList: !!(getRandomInteger(0, 1)),
     isInWatched: !!(getRandomInteger(0, 1)),
     isInFavorites: !!(getRandomInteger(0, 1)),
+    actors: generateActors(),
   };
 };
