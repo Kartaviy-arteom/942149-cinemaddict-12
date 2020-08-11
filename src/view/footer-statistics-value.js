@@ -1,5 +1,5 @@
-export const createFooterStatisticsValueTemplate = () => {
+export const createFooterStatisticsValueTemplate = (movies) => {
   return (`
-    <p>130 291 movies inside</p>`
+    <p>${movies.length} movies inside</p>`
   );
 };
