@@ -8,6 +8,7 @@ import {createExtraListTemplate} from "./view/extra-list.js";
 import {createFooterStatisticsValueTemplate} from "./view/footer-statistics-value.js";
 import {createPopupTemplate} from "./view/popup.js";
 import {generateFilmData} from "./mock/film-data.js";
+import {generateUserStatus} from "./mock/user-status.js";
 import {getRandomInteger} from "../utils.js";
 
 const CARD_QUANTITY = 5;
@@ -18,6 +19,7 @@ const MOST_COMMENTED_TITLE = `Most commented`;
 const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
+const currentUserStatus = generateUserStatus();
 
 const films = new Array(CARD_QUANTITY).fill().map(generateFilmData);
 
@@ -25,7 +27,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(headerElement, createProfileTemplate(), `beforeend`);
+render(headerElement, createProfileTemplate(currentUserStatus), `beforeend`);
 render(mainElement, createMainNavTemplate(), `afterbegin`);
 render(mainElement, createSortListTemplate(), `beforeend`);
 render(mainElement, createFilmsBlockTemplate(), `beforeend`);
