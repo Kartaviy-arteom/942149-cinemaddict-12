@@ -1,4 +1,6 @@
-export const createMainNavTemplate = (statsData) => {
+import {createElement} from "../utils.js";
+
+const createMainNavTemplate = (statsData) => {
   const {watchlist, history, favorite} = statsData;
   return (
     `<nav class="main-navigation">
@@ -12,3 +14,25 @@ export const createMainNavTemplate = (statsData) => {
     </nav>`
   );
 };
+
+export default class MainNav {
+  constructor(categoriesData) {
+    this._categoriesData = categoriesData;
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return createMainNavTemplate(this._categoriesData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
