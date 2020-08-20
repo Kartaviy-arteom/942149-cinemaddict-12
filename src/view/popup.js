@@ -1,7 +1,6 @@
-import {humanizeDueDate} from "../utils.js";
-import {transformData} from "../utils.js";
+import {humanizeDueDate, transformData, createElement} from "../utils.js";
 
-export const createPopupTemplate = (data) => {
+const createPopupTemplate = (data) => {
   const {title, poster, description, comments, ratingValue, productionData, duration, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors} = data;
 
   const createGenreList = () => {
@@ -35,8 +34,7 @@ export const createPopupTemplate = (data) => {
   const watchedInputAttr = isInWatched ? `checked` : ` `;
   const favoritesInputAttr = isInFavorites ? `checked` : ` `;
 
-  return (`
-    <section class="film-details">
+  return (`<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="form-details__top-container">
         <div class="film-details__close">
@@ -150,3 +148,25 @@ export const createPopupTemplate = (data) => {
     </form>
   </section>`);
 };
+
+export default class Popup {
+  constructor(filmData) {
+    this._element = null;
+    this._filmData = filmData;
+  }
+
+  _getTemplate() {
+    return createPopupTemplate(this._filmData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

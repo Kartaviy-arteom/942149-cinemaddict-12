@@ -6,15 +6,16 @@ import FilmCard from "./view/film-card.js";
 import ShowMoreBtn from "./view/show-more-btn.js";
 import ExtraList from "./view/extra-list.js";
 import FooterStatistics from "./view/footer-statistics-value.js";
-import {createPopupTemplate} from "./view/popup.js";
+import Popup from "./view/popup.js";
 import {generateFilmData} from "./mock/film-data.js";
 import {generateUserStatus} from "./mock/user-status.js";
 import {generateNavStats} from "./mock/main-nav.js";
-import {getRandomInteger, RenderPosition, render, renderTemplate} from "./utils.js";
+import {getRandomInteger, RenderPosition, render} from "./utils.js";
 
 const CARD_QUANTITY = 70;
 const FILM_COUNT_PER_STEP = 5;
 const EXTRA_LIST_CARD_QUANTITY = 2;
+const ESC_KEY_CODE = 27;
 const TOP_RATED_TITLE = `Top rated`;
 const MOST_COMMENTED_TITLE = `Most commented`;
 
@@ -37,8 +38,52 @@ render(mainElement, filmsComponent.getElement(), RenderPosition.BEFOREEND);
 const filmList = filmsComponent.getElement().querySelector(`.films-list`);
 const filmsContainer = filmList.querySelector(`.films-list__container`);
 
+const renderFilmCard = (filmListElement, filmData) => {
+  const filmComponent = new FilmCard(filmData);
+  const popupComponent = new Popup(filmData);
+  const popupCloseBtn = popupComponent.getElement().querySelector(`.film-details__close-btn`);
+
+  const replaceFilmToPopup = () => {
+    filmListElement.replaceChild(popupComponent.getElement(), filmComponent.getElement());
+  };
+
+  const replacePopupToFilm = () => {
+    filmListElement.replaceChild(filmComponent.getElement(), popupComponent.getElement());
+  };
+
+  const closePopup = (evt) => {
+    evt.preventDefault();
+    replacePopupToFilm();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+    popupCloseBtn.removeEventListener(`click`, onPopupCloseBtnClick);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.keyCode === ESC_KEY_CODE) {
+      closePopup(evt);
+    }
+  };
+
+  const onPopupCloseBtnClick = (evt) => {
+    closePopup(evt);
+  };
+
+  render(filmListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
+  const filmTitle = filmComponent.getElement().querySelector(`.film-card__title`);
+  const filmPoster = filmComponent.getElement().querySelector(`.film-card__poster`);
+  const filmCommentsBlock = filmComponent.getElement().querySelector(`.film-card__comments`);
+
+  const popupTargets = [filmTitle, filmPoster, filmCommentsBlock];
+
+  popupTargets.forEach((el) => el.addEventListener(`click`, () => {
+    replaceFilmToPopup();
+    popupCloseBtn.addEventListener(`click`, onPopupCloseBtnClick);
+    document.addEventListener(`keydown`, onEscKeyDown);
+  }));
+};
+
 for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i++) {
-  render(filmsContainer, new FilmCard(films[i]).getElement(), RenderPosition.BEFOREEND);
+  renderFilmCard(filmsContainer, films[i]);
 }
 
 if (films.length > FILM_COUNT_PER_STEP) {
@@ -49,7 +94,7 @@ if (films.length > FILM_COUNT_PER_STEP) {
 
   showMoreBtnComponent.getElement().addEventListener(`click`, (evt) => {
     evt.preventDefault();
-    films.slice(renderedTFilmCount, renderedTFilmCount + FILM_COUNT_PER_STEP).forEach((film) => render(filmsContainer, new FilmCard(film).getElement(), RenderPosition.BEFOREEND));
+    films.slice(renderedTFilmCount, renderedTFilmCount + FILM_COUNT_PER_STEP).forEach((film) => renderFilmCard(filmsContainer, film));
     renderedTFilmCount += FILM_COUNT_PER_STEP;
 
     if (renderedTFilmCount >= films.length) {
@@ -65,11 +110,8 @@ render(filmsComponent.getElement(), new ExtraList(MOST_COMMENTED_TITLE).getEleme
 filmsComponent.getElement().querySelectorAll(`.films-list--extra`).forEach((el) => {
   const filmContainer = el.querySelector(`.films-list__container`);
   for (let i = 0; i < EXTRA_LIST_CARD_QUANTITY; i++) {
-    render(filmContainer, new FilmCard(films[getRandomInteger(0, films.length - 1)]).getElement(), RenderPosition.BEFOREEND);
+    renderFilmCard(filmContainer, films[getRandomInteger(0, films.length - 1)]);
   }
 });
 
 render(footerStatisticsElement, new FooterStatistics(films).getElement(), RenderPosition.BEFOREEND);
-renderTemplate(document.body, createPopupTemplate(films[0]), `beforeend`);
-
-document.querySelector(`.film-details`).style.position = `static`;
