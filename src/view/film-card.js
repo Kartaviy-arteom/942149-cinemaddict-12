@@ -1,13 +1,14 @@
-export const createFilmCard = (filmData) => {
-  const {title, poster, description, comments, ratingValue, productionData, duration, genre} = filmData;
-  const getShortDescription = () => {
-    let shortDescription = description;
-    if (description.length > 140) {
-      shortDescription = `${shortDescription.substring(0, 139)}...`;
-    }
-    return shortDescription;
-  };
-  const shortDescription = getShortDescription();
+const getShortDescription = (text) => {
+  let shortDescription = text;
+  if (text.length > 140) {
+    shortDescription = `${shortDescription.substring(0, 139)}...`;
+  }
+  return shortDescription;
+};
+
+export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, duration, genre}) => {
+
+  const shortDescription = getShortDescription(description);
   return (
     `
     <article class="film-card">

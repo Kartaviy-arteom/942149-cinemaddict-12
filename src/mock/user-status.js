@@ -1,12 +1,12 @@
 import {getRandomInteger} from "../utils.js";
 
-export const generateUserStatus = () => {
-  const statuses = [
-    ``,
-    `novice`,
-    `fan`,
-    `movie buff`,
-  ];
+const statuses = [
+  ``,
+  `novice`,
+  `fan`,
+  `movie buff`,
+];
 
+export const generateUserStatus = () => {
   return statuses[getRandomInteger(0, statuses.length - 1)];
 };
