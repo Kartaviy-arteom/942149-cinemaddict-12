@@ -10,11 +10,13 @@ import {createPopupTemplate} from "./view/popup.js";
 import {generateFilmData} from "./mock/film-data.js";
 import {generateUserStatus} from "./mock/user-status.js";
 import {generateNavStats} from "./mock/main-nav.js";
+import {getRandomInteger} from "./utils.js";
 
 
 const CARD_QUANTITY = 70;
 const FILM_COUNT_PER_STEP = 5;
 const GROUP_COUNT_PER_STEP = 1;
+const EXTRA_CARDS_COUNT = 2;
 
 const TOP_RATED_TITLE = `Top rated`;
 const MOST_COMMENTED_TITLE = `Most commented`;
@@ -65,8 +67,16 @@ if (numberOfFilmsGroup > GROUP_COUNT_PER_STEP) {
   });
 }
 
-render(filmsElement, createExtraListTemplate(films, TOP_RATED_TITLE), `beforeend`);
-render(filmsElement, createExtraListTemplate(films, MOST_COMMENTED_TITLE), `beforeend`);
+const choseRandomCardsTemplate = (filmsData, cardquantity) => {
+  let template = ``;
+  for (let i = 0; i < cardquantity; i++) {
+    template += createFilmCard(films[getRandomInteger(0, filmsData.length - 1)]);
+  }
+  return template;
+};
+
+render(filmsElement, createExtraListTemplate(choseRandomCardsTemplate(films, EXTRA_CARDS_COUNT), TOP_RATED_TITLE), `beforeend`);
+render(filmsElement, createExtraListTemplate(choseRandomCardsTemplate(films, EXTRA_CARDS_COUNT), MOST_COMMENTED_TITLE), `beforeend`);
 
 render(footerStatisticsElement, createFooterStatisticsValueTemplate(films.length), `beforeend`);
 render(document.body, createPopupTemplate(films[0]), `beforeend`);
