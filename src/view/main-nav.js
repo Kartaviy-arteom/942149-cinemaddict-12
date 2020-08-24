@@ -1,7 +1,6 @@
 import {createElement} from "../utils.js";
 
-const createMainNavTemplate = (statsData) => {
-  const {watchlist, history, favorite} = statsData;
+const createMainNavTemplate = ({watchlist, history, favorite}) => {
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">

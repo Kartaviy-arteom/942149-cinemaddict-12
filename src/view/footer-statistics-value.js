@@ -1,7 +1,7 @@
 import {createElement} from "../utils.js";
 
-const createFooterStatisticsValueTemplate = (movies) => {
-  return (`<p>${movies.length} movies inside</p>`);
+const createFooterStatisticsValueTemplate = (number) => {
+  return (`<p>${number} movies inside</p>`);
 };
 
 export default class FooterStatistics {

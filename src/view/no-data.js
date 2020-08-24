@@ -1,12 +1,10 @@
 import {createElement} from "../utils.js";
 
 const createNoCardTemplate = () => {
-  return `<p class="board__no-tasks">
-    Click «ADD NEW TASK» in menu to create your first task
-  </p>`;
+  return `<h2 class="films-list__title">There are no movies in our database</h2>`;
 };
 
-export default class NoCard {
+export default class NoData {
   constructor() {
     this._element = null;
   }

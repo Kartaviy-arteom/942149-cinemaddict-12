@@ -1,15 +1,15 @@
 import {createElement} from "../utils.js";
 
-const createFilmCard = (filmData) => {
-  const {title, poster, description, comments, ratingValue, productionData, duration, genre} = filmData;
-  const getShortDescription = () => {
-    let shortDescription = description;
-    if (description.length > 140) {
-      shortDescription = `${shortDescription.substring(0, 139)}...`;
-    }
-    return shortDescription;
-  };
-  const shortDescription = getShortDescription();
+const getShortText = (text) => {
+  let shortDescription = text;
+  if (text.length > 140) {
+    shortDescription = `${shortDescription.substring(0, 139)}...`;
+  }
+  return shortDescription;
+};
+
+export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, duration, genre}) => {
+  const shortDescription = getShortText(description);
   return (`<article class="film-card">
             <h3 class="film-card__title">${title}</h3>
             <p class="film-card__rating">${ratingValue}</p>
