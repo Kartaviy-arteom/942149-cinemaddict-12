@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const getShortText = (text) => {
   let shortDescription = text;
@@ -30,25 +30,48 @@ export const createFilmCard = ({title, poster, description, comments, ratingValu
   );
 };
 
-export default class FilmCard {
+export default class FilmCard extends BaseComponent {
   constructor(filmData) {
-    this._element = null;
+    super();
     this._filmData = filmData;
+
+    this._onFilmTitleClick = this._onFilmTitleClick.bind(this);
+    this._onFilmPosterClick = this._onFilmTitleClick.bind(this);
+    this._onFilmCommentsBlockClick = this._onFilmTitleClick.bind(this);
   }
 
   _getTemplate() {
     return createFilmCard(this._filmData);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
+  setOnFilmTitleClick(callback) {
+    this._callback.filmTitleClick = callback;
+    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, this._onFilmTitleClick);
   }
 
-  removeElement() {
-    this._element = null;
+  setOnFilmPosterClick(callback) {
+    this._callback.filmPosterClick = callback;
+    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, this._onFilmPosterClick);
+  }
+
+  setOnFilmCommentsBlockClick(callback) {
+    this._callback.filmCommentsBlockClick = callback;
+    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._onFilmCommentsBlockClick);
+  }
+
+  _onFilmTitleClick(evt) {
+    evt.preventDefault();
+    this._callback.filmTitleClick();
+  }
+
+  _onFilmPosterClick(evt) {
+    evt.preventDefault();
+    this._callback.filmPosterClick();
+  }
+
+  _onFilmCommentsBlockClick(evt) {
+    evt.preventDefault();
+    this._callback.filmCommentsBlockClick();
   }
 }
 

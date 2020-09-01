@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 import {renderFilmCard} from "./render-film-card.js";
 
 const createExtraListTemplate = (title) => {
@@ -10,22 +10,16 @@ const createExtraListTemplate = (title) => {
           </section>`);
 };
 
-export default class ExtraList {
+export default class ExtraList extends BaseComponent {
   constructor(blockTiltle, childsData) {
-    this._element = null;
+    super();
+
     this._blockTiltle = blockTiltle;
     this._childsData = childsData;
   }
 
   _getTemplate() {
     return createExtraListTemplate(this._blockTiltle);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
   }
 
   getElementWithChildren() {
@@ -35,9 +29,5 @@ export default class ExtraList {
     });
 
     return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

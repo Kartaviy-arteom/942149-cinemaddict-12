@@ -1,4 +1,5 @@
-import {humanizeDueDate, transformData, createElement} from "../utils.js";
+import {humanizeDueDate, transformData} from "../utils/card.js";
+import BaseComponent from "./base-component.js";
 
 const createPopupTemplate = (data) => {
   const {title, poster, description, comments, ratingValue, productionData, duration, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors} = data;
@@ -149,24 +150,29 @@ const createPopupTemplate = (data) => {
   </section>`);
 };
 
-export default class Popup {
+export default class Popup extends BaseComponent {
   constructor(filmData) {
-    this._element = null;
+    super();
     this._filmData = filmData;
+    this._onCloseBtnClick = this._onCloseBtnClick.bind(this);
+    this._closeBtn = this.getElement().querySelector(`.film-details__close-btn`);
   }
 
   _getTemplate() {
     return createPopupTemplate(this._filmData);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
+  _onCloseBtnClick(evt) {
+    evt.preventDefault();
+    this._callback.closeBtnClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnCloseBtnClick(callback) {
+    this._callback.closeBtnClick = callback;
+    this._closeBtn.addEventListener(`click`, this._onCloseBtnClick);
+  }
+
+  removeOnCloseBtnClick() {
+    this._closeBtn.removeEventListener(`click`, this._onCloseBtnClick);
   }
 }

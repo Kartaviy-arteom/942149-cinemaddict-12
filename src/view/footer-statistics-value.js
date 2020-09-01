@@ -1,27 +1,15 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const createFooterStatisticsValueTemplate = (number) => {
   return (`<p>${number} movies inside</p>`);
 };
 
-export default class FooterStatistics {
-  constructor(films) {
-    this._element = null;
-    this._films = films;
+export default class FooterStatistics extends BaseComponent {
+  constructor(quantity) {
+    super();
+    this._quantity = quantity;
   }
-
   _getTemplate() {
-    return createFooterStatisticsValueTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return createFooterStatisticsValueTemplate(this._quantity);
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const createProfileTemplate = (userStatus) => {
   return (
@@ -9,24 +9,13 @@ const createProfileTemplate = (userStatus) => {
   );
 };
 
-export default class Profile {
+export default class Profile extends BaseComponent {
   constructor(statusData) {
-    this._element = null;
+    super();
     this._statusData = statusData;
   }
 
   _getTemplate() {
     return createProfileTemplate(this._statusData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

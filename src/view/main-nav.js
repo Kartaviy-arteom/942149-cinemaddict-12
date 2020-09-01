@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const createMainNavTemplate = ({watchlist, history, favorite}) => {
   return (
@@ -14,24 +14,13 @@ const createMainNavTemplate = ({watchlist, history, favorite}) => {
   );
 };
 
-export default class MainNav {
+export default class MainNav extends BaseComponent {
   constructor(categoriesData) {
+    super();
     this._categoriesData = categoriesData;
-    this._element = null;
   }
 
   _getTemplate() {
     return createMainNavTemplate(this._categoriesData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

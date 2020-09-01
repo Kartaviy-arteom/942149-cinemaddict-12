@@ -1,32 +1,18 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
+import {sortType} from "../consts.js";
 
 const createSortListTemplate = () => {
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
+      <li><a href="#" class="sort__button sort__button--active" data-sort-type="${sortType.DEFAULT}">Sort by default</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${sortType.DATE}">Sort by date</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${sortType.RATING}">Sort by rating</a></li>
     </ul>`
   );
 };
 
-export default class SortList {
-  constructor() {
-    this._element = null;
-  }
-
+export default class SortList extends BaseComponent {
   _getTemplate() {
     return createSortListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

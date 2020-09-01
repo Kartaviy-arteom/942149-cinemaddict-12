@@ -1,26 +1,25 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const createShowMoreBtn = () => {
   return (`<button class="films-list__show-more">Show more</button>`);
 };
 
-export default class ShowMoreBtn {
+export default class ShowMoreBtn extends BaseComponent {
   constructor() {
-    this._element = null;
+    super();
+    this._onBtnClick = this._onBtnClick.bind(this);
   }
-
   _getTemplate() {
     return createShowMoreBtn();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
+  _onBtnClick(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnBtnClick(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(`click`, this._onBtnClick);
   }
 }
