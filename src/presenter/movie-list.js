@@ -4,6 +4,8 @@ import ShowMoreBtn from "../view/show-more-btn.js";
 import FilmsBlock from "../view/films-block.js";
 import ExtraList from "../view/extra-list.js";
 import {RenderPosition, render} from "../utils/render.js";
+import {sortType} from "../consts.js";
+import {sortTaskUp} from "../utils/card.js";
 
 const FILM_COUNT_PER_STEP = 5;
 const GROUP_COUNT_PER_STEP = 1;
@@ -17,12 +19,13 @@ export default class MovieList {
     this._filmsContainer = null;
     this._boardWrappper = boardWrapper;
     this._noDataComponent = new NoData();
-    this._cardcomponent = null;
+    this._cardComponent = null;
     this._showMoreBtnComponent = new ShowMoreBtn();
     this._filmsBlock = new FilmsBlock();
     this._extraListComponent = new ExtraList();
 
     this._transformedFilmsData = [];
+    this.changeSortType = this.changeSortType.bind(this);
   }
 
   init(filmsData) {
@@ -46,7 +49,7 @@ export default class MovieList {
   }
 
   _renderFilmCard(cardData) {
-    this._cardcomponent.init(cardData);
+    this._cardComponent.init(cardData);
   }
 
   _renderGroupOfFilmCard(groupNumber) {
@@ -76,7 +79,7 @@ export default class MovieList {
     this._filmList = this._filmsBlock.getElement().querySelector(`.films-list`);
     const filmsContainer = this._filmList.querySelector(`.films-list__container`);
     this._filmsContainer = filmsContainer;
-    this._cardcomponent = new Card(this._filmsContainer);
+    this._cardComponent = new Card(this._filmsContainer);
 
     if (this._filmsData.length === 0) {
       render(this._filmList, this._noDataComponent, RenderPosition.AFTERBEGIN);
@@ -107,5 +110,40 @@ export default class MovieList {
       extraListData = extraListData.slice(0, 2);
       render(this._filmsBlock, new ExtraList(typeTitle, extraListData).getElementWithChildren(), RenderPosition.BEFOREEND);
     }
+  }
+
+  changeSortType(chosenSortType) {
+    if (this._currentSortType === chosenSortType) {
+      return;
+    }
+
+    this._sortCards(chosenSortType);
+    this._clearBordCardList();
+    this._transformedFilmsData = [];
+    this._transformFilmsData();
+    this._renderGroupOfFilmCard(0);
+    if (this._numberOfTasksGroup > GROUP_COUNT_PER_STEP) {
+      this._renderShowMoreBtn();
+    }
+  }
+
+  _sortCards(chosenSortType) {
+    switch (chosenSortType) {
+      case sortType.DATE:
+        this._filmsData.sort(sortTaskUp);
+        break;
+      case sortType.RATING:
+        this._filmsData.sort((a, b) => b.ratingValue - a.ratingValue);
+        break;
+      default:
+        this._filmsData = this._sourcedfilmsData.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _clearBordCardList() {
+    this._filmsContainer.innerHTML = ``;
+    this._renderedTaskGroupCount = GROUP_COUNT_PER_STEP;
   }
 }

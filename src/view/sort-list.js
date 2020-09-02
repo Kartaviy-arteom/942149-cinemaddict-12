@@ -12,7 +12,25 @@ const createSortListTemplate = () => {
 };
 
 export default class SortList extends BaseComponent {
+  constructor() {
+    super();
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+  }
   _getTemplate() {
     return createSortListTemplate();
+  }
+
+  _onSortTypeChange(evt) {
+    if (evt.target.tagName.toLowerCase() !== `a`) {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
+  }
+
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener(`click`, this._onSortTypeChange);
   }
 }

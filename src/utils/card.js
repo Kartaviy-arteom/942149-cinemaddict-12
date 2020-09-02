@@ -42,6 +42,6 @@ export const sortTaskUp = (taskA, taskB) => {
     return weight;
   }
 
-  return taskA.dueDate.getTime() - taskB.dueDate.getTime();
+  return taskA.productionData.getTime() - taskB.productionData.getTime();
 };
 

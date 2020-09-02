@@ -22,9 +22,11 @@ const navStats = generateNavStats(films);
 
 render(headerElement, new Profile(currentUserStatus), RenderPosition.BEFOREEND);
 render(mainElement, new MainNav(navStats), RenderPosition.AFTERBEGIN);
-render(mainElement, new SortList(), RenderPosition.BEFOREEND);
+const sortListComponent = new SortList();
+render(mainElement, sortListComponent, RenderPosition.BEFOREEND);
 
 const filmsListPresenter = new MovieList(mainElement);
 filmsListPresenter.init(films);
+sortListComponent.setSortTypeChangeHandler(filmsListPresenter.changeSortType);
 
 render(footerStatisticsElement, new FooterStatistics(films.length).getElement(), RenderPosition.BEFOREEND);
