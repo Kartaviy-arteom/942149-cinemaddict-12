@@ -5,7 +5,7 @@ import FilmsBlock from "../view/films-block.js";
 import ExtraList from "../view/extra-list.js";
 import {RenderPosition, render} from "../utils/render.js";
 import {sortType} from "../consts.js";
-import {sortTaskUp} from "../utils/card.js";
+import {sortTaskDown} from "../utils/card.js";
 
 const FILM_COUNT_PER_STEP = 5;
 const GROUP_COUNT_PER_STEP = 1;
@@ -130,7 +130,7 @@ export default class MovieList {
   _sortCards(chosenSortType) {
     switch (chosenSortType) {
       case sortType.DATE:
-        this._filmsData.sort(sortTaskUp);
+        this._filmsData.sort(sortTaskDown);
         break;
       case sortType.RATING:
         this._filmsData.sort((a, b) => b.ratingValue - a.ratingValue);
