@@ -1,3 +1,4 @@
+
 export const createMainNavTemplate = ({watchlist, history, favorite}) => {
   return (
     `<nav class="main-navigation">
