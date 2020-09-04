@@ -38,6 +38,7 @@ export default class MovieList {
 
     this._renderSortList();
     this._sortListComponent.setSortTypeChangeHandler(this._changeSortType);
+
     this._renderMovieList();
   }
 
