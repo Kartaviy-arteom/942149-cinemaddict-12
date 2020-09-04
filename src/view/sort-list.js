@@ -1,6 +1,8 @@
 import BaseComponent from "./base-component.js";
 import {sortType} from "../consts.js";
 
+const ACTIVE_BTN_CLASS_NAME = `sort__button--active`;
+
 const createSortListTemplate = () => {
   return (
     `<ul class="sort">
@@ -26,6 +28,11 @@ export default class SortList extends BaseComponent {
     }
 
     evt.preventDefault();
+    if (!evt.target.classList.contains(ACTIVE_BTN_CLASS_NAME)) {
+      const a = this.getElement().querySelector(`.${ACTIVE_BTN_CLASS_NAME}`);
+      a.classList.remove(ACTIVE_BTN_CLASS_NAME);
+      evt.target.classList.add(ACTIVE_BTN_CLASS_NAME);
+    }
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 

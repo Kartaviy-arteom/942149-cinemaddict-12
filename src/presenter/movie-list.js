@@ -3,6 +3,7 @@ import Card from "./card.js";
 import ShowMoreBtn from "../view/show-more-btn.js";
 import FilmsBlock from "../view/films-block.js";
 import ExtraList from "../view/extra-list.js";
+import SortList from "../view/sort-list.js";
 import {RenderPosition, render} from "../utils/render.js";
 import {sortType} from "../consts.js";
 import {sortTaskDown} from "../utils/card.js";
@@ -19,13 +20,14 @@ export default class MovieList {
     this._filmsContainer = null;
     this._boardWrappper = boardWrapper;
     this._noDataComponent = new NoData();
+    this._sortListComponent = new SortList();
     this._cardComponent = null;
     this._showMoreBtnComponent = new ShowMoreBtn();
     this._filmsBlock = new FilmsBlock();
     this._extraListComponent = new ExtraList();
 
     this._transformedFilmsData = [];
-    this.changeSortType = this.changeSortType.bind(this);
+    this._changeSortType = this._changeSortType.bind(this);
   }
 
   init(filmsData) {
@@ -34,8 +36,9 @@ export default class MovieList {
     this._transformFilmsData();
     this._numberOfTasksGroup = this._transformedFilmsData.length;
 
+    this._renderSortList();
+    this._sortListComponent.setSortTypeChangeHandler(this._changeSortType);
     this._renderMovieList();
-
   }
 
   _transformFilmsData() {
@@ -48,7 +51,12 @@ export default class MovieList {
     render(this._boardWrappper, this._noDataComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderSortList() {
+    render(this._boardWrappper, this._sortListComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderFilmCard(cardData) {
+    this._cardComponent = new Card(this._filmsContainer);
     this._cardComponent.init(cardData);
   }
 
@@ -79,7 +87,7 @@ export default class MovieList {
     this._filmList = this._filmsBlock.getElement().querySelector(`.films-list`);
     const filmsContainer = this._filmList.querySelector(`.films-list__container`);
     this._filmsContainer = filmsContainer;
-    this._cardComponent = new Card(this._filmsContainer);
+
 
     if (this._filmsData.length === 0) {
       render(this._filmList, this._noDataComponent, RenderPosition.AFTERBEGIN);
@@ -112,7 +120,7 @@ export default class MovieList {
     }
   }
 
-  changeSortType(chosenSortType) {
+  _changeSortType(chosenSortType) {
     if (this._currentSortType === chosenSortType) {
       return;
     }
