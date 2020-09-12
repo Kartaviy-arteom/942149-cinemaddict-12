@@ -8,7 +8,7 @@ const getShortText = (text) => {
   return shortDescription;
 };
 
-export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, duration, genre}) => {
+export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, duration, genre, isInWatchList, isInWatched, isInFavorites}) => {
   const shortDescription = getShortText(description);
   return (`<article class="film-card">
             <h3 class="film-card__title">${title}</h3>
@@ -22,9 +22,9 @@ export const createFilmCard = ({title, poster, description, comments, ratingValu
             <p class="film-card__description">${shortDescription}</p>
             <a class="film-card__comments">${comments.length} comments</a>
             <form class="film-card__controls">
-              <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-              <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-              <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+              <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isInWatchList ? `film-card__controls-item--active` : ``}">Add to watchlist</button>
+              <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isInWatched ? `film-card__controls-item--active` : ``}">Mark as watched</button>
+              <button class="film-card__controls-item button film-card__controls-item--favorite ${isInFavorites ? `film-card__controls-item--active` : ``}">Mark as favorite</button>
             </form>
           </article>`
   );
@@ -72,6 +72,21 @@ export default class FilmCard extends BaseComponent {
   _onFilmCommentsBlockClick(evt) {
     evt.preventDefault();
     this._callback.filmCommentsBlockClick();
+  }
+
+  setWatchListClickHandler(callback) {
+    this._callback.watchListClick = callback;
+    this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._callback.watchListClick);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._callback.watchedClick);
+  }
+
+  setFavoritesClickHandler(callback) {
+    this._callback.favoritesClick = callback;
+    this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._callback.favoritesClick);
   }
 }
 

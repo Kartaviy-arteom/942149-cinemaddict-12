@@ -1,5 +1,4 @@
 import BaseComponent from "./base-component.js";
-import {renderFilmCard} from "./render-film-card.js";
 
 const createExtraListTemplate = (title) => {
   return (`<section class="films-list--extra">
@@ -11,23 +10,16 @@ const createExtraListTemplate = (title) => {
 };
 
 export default class ExtraList extends BaseComponent {
-  constructor(blockTiltle, childsData) {
+  constructor(blockTiltle) {
     super();
-
     this._blockTiltle = blockTiltle;
-    this._childsData = childsData;
   }
 
   _getTemplate() {
     return createExtraListTemplate(this._blockTiltle);
   }
 
-  getElementWithChildren() {
-    const filmList = this.getElement().querySelector(`.films-list__container`);
-    this._childsData.forEach((element) => {
-      renderFilmCard(filmList, element);
-    });
-
-    return this._element;
+  getFilmList() {
+    return this.getElement().querySelector(`.films-list__container`);
   }
 }

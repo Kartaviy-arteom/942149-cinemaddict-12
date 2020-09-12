@@ -7,6 +7,7 @@ import SortList from "../view/sort-list.js";
 import {RenderPosition, render} from "../utils/render.js";
 import {sortType} from "../consts.js";
 import {sortTaskDown} from "../utils/card.js";
+import {updateItem} from "../utils/common.js";
 
 const FILM_COUNT_PER_STEP = 5;
 const GROUP_COUNT_PER_STEP = 1;
@@ -28,6 +29,11 @@ export default class MovieList {
 
     this._transformedFilmsData = [];
     this._changeSortType = this._changeSortType.bind(this);
+    this._onFilmCardChange = this._onFilmCardChange.bind(this);
+
+    this._onModeChange = this._onModeChange.bind(this);
+
+    this._filmPresenter = {};
   }
 
   init(filmsData) {
@@ -39,6 +45,18 @@ export default class MovieList {
     this._renderSortList();
     this._sortListComponent.setSortTypeChangeHandler(this._changeSortType);
     this._renderMovieList();
+  }
+
+  _onModeChange() {
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenters) => presenters.forEach((el) => el.resetView()));
+  }
+
+  _onFilmCardChange(updatedFilmCard) {
+    this._filmsData = updateItem(this._filmsData, updatedFilmCard);
+    this._sourcedfilmsData = updateItem(this._sourcedfilmsData, updatedFilmCard);
+    this._filmPresenter[updatedFilmCard.id].forEach((el) => el.init(updatedFilmCard));
   }
 
   _transformFilmsData() {
@@ -55,9 +73,14 @@ export default class MovieList {
     render(this._boardWrappper, this._sortListComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderFilmCard(cardData) {
-    this._cardComponent = new Card(this._filmsContainer);
+  _renderFilmCard(cardData, container = this._filmsContainer) {
+    this._cardComponent = new Card(container, this._onFilmCardChange, this._onModeChange);
     this._cardComponent.init(cardData);
+    if (!this._filmPresenter[cardData.id]) {
+      this._filmPresenter[cardData.id] = [this._cardComponent];
+    } else {
+      this._filmPresenter[cardData.id].push(this._cardComponent);
+    }
   }
 
   _renderGroupOfFilmCard(groupNumber) {
@@ -109,14 +132,20 @@ export default class MovieList {
       extraListData = filmData.slice()
         .sort((a, b) => b.ratingValue - a.ratingValue);
       extraListData = extraListData.slice(0, 2);
-      render(this._filmsBlock, new ExtraList(typeTitle, extraListData).getElementWithChildren(), RenderPosition.BEFOREEND);
+      const extraListComponent = new ExtraList(typeTitle);
+
+      extraListData.forEach((el) => this._renderFilmCard(el, extraListComponent.getFilmList()));
+      render(this._filmsBlock, extraListComponent, RenderPosition.BEFOREEND);
     }
 
     if (typeTitle === extraListTitle.MOST_COMMENTED_TITLE && !filmData.every((el) => Object.keys(el.comments).length === 0)) {
       extraListData = filmData.slice()
         .sort((a, b) => Object.keys(b.comments).length - Object.keys(a.comments).length);
       extraListData = extraListData.slice(0, 2);
-      render(this._filmsBlock, new ExtraList(typeTitle, extraListData).getElementWithChildren(), RenderPosition.BEFOREEND);
+      const extraListComponent = new ExtraList(typeTitle);
+
+      extraListData.forEach((el) => this._renderFilmCard(el, extraListComponent.getFilmList()));
+      render(this._filmsBlock, extraListComponent, RenderPosition.BEFOREEND);
     }
   }
 
@@ -151,7 +180,10 @@ export default class MovieList {
   }
 
   _clearBordCardList() {
-    this._filmsContainer.innerHTML = ``;
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._filmPresenter = {};
     this._renderedTaskGroupCount = GROUP_COUNT_PER_STEP;
   }
 }
