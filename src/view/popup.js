@@ -1,8 +1,8 @@
-import {humanizeDueDate, transformData} from "../utils/card.js";
+import {formatDate} from "../utils/card.js";
 import Smart from "./smart.js";
 
 const createPopupTemplate = (data) => {
-  const {title, poster, description, comments, ratingValue, productionData, duration, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
+  const {title, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
 
   const createGenreList = () => {
     return genre.map((genreType) => `<span class="film-details__genre">${genreType}</span>`).join(``);
@@ -18,7 +18,7 @@ const createPopupTemplate = (data) => {
           <p class="film-details__comment-text">${comment.text}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${transformData(comment.data)}</span>
+            <span class="film-details__comment-day">${formatDate(comment.data, `YYYY/MM/DD HH:mm`)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -75,11 +75,11 @@ const createPopupTemplate = (data) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${humanizeDueDate(productionData)}</td>
+                <td class="film-details__cell">${formatDate(productionData, `DD MMMM yyyy`)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${duration}</td>
+                <td class="film-details__cell">${runtime}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>

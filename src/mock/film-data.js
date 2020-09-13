@@ -62,8 +62,8 @@ const generateProductionYear = () => {
   return new Date(getRandomInteger(firstMovieYear, maxYearValue), getRandomInteger(0, 12), getRandomInteger(1, 31));
 };
 
-const generateDuration = () => {
-  return `${getRandomInteger(0, 10)}h ${getRandomInteger(1, 59)}m`;
+const generateRuntime = () => {
+  return getRandomInteger(1, 300);
 };
 
 const generateDirector = () => {
@@ -192,7 +192,7 @@ export const generateFilmData = () => {
     comments: generateComments(),
     ratingValue: generateRating(),
     productionData: generateProductionYear(),
-    duration: generateDuration(),
+    runtime: generateRuntime(),
     genre: generateGenre(),
     director: generateDirector(),
     writers: generateWriters(),

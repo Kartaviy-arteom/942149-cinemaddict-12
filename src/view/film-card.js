@@ -1,3 +1,4 @@
+import {formatTime} from "../utils/card.js";
 import BaseComponent from "./base-component.js";
 
 const getShortText = (text) => {
@@ -8,14 +9,14 @@ const getShortText = (text) => {
   return shortDescription;
 };
 
-export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, duration, genre, isInWatchList, isInWatched, isInFavorites}) => {
+export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, runtime, genre, isInWatchList, isInWatched, isInFavorites}) => {
   const shortDescription = getShortText(description);
   return (`<article class="film-card">
             <h3 class="film-card__title">${title}</h3>
             <p class="film-card__rating">${ratingValue}</p>
             <p class="film-card__info">
               <span class="film-card__year">${productionData.getFullYear()}</span>
-              <span class="film-card__duration">${duration}</span>
+              <span class="film-card__duration">${formatTime(runtime)}</span>
               <span class="film-card__genre">${genre[0]}</span>
             </p>
             <img src="./images/posters/${poster}" alt="" class="film-card__poster">

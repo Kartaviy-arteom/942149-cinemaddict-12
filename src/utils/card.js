@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -44,4 +46,21 @@ export const sortTaskDown = (taskA, taskB) => {
 
   return taskB.productionData.getTime() - taskA.productionData.getTime();
 };
+
+export const formatDate = (date, format) => {
+  if (!(date instanceof Date)) {
+    return ``;
+  }
+
+  return moment(date).format(format);
+};
+
+export const formatTime = (minutesNumber) => {
+  if (!Number.isInteger(minutesNumber)) {
+    return ``;
+  }
+
+  return moment.utc(moment.duration(minutesNumber, `minutes`).asMilliseconds()).format(`H[h] mm[m]`);
+};
+
 
