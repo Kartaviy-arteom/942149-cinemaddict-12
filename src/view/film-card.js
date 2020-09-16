@@ -74,4 +74,3 @@ export default class FilmCard extends BaseComponent {
     this._callback.filmCommentsBlockClick();
   }
 }
-
