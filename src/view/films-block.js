@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import BaseComponent from "./base-component.js";
 
 const createFilmsBlockTemplate = () => {
   return (
@@ -13,23 +13,8 @@ const createFilmsBlockTemplate = () => {
   );
 };
 
-export default class FilmsBlock {
-  constructor() {
-    this._element = null;
-  }
-
+export default class FilmsBlock extends BaseComponent {
   _getTemplate() {
     return createFilmsBlockTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

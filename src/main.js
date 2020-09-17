@@ -1,25 +1,14 @@
-import {createProfileTemplate} from "./view/profile.js";
-import {createMainNavTemplate} from "./view/main-nav.js";
-import {createSortListTemplate} from "./view/sort-list.js";
-import {createFilmsBlockTemplate} from "./view/films-block.js";
-import {createFilmCard} from "./view/film-card.js";
-import {createShowMoreBtn} from "./view/show-more-btn.js";
-import {createExtraListTemplate} from "./view/extra-list.js";
-import {createFooterStatisticsValueTemplate} from "./view/footer-statistics-value.js";
-import {createPopupTemplate} from "./view/popup.js";
+import Profile from "./view/profile.js";
+import MainNav from "./view/main-nav.js";
+import FooterStatistics from "./view/footer-statistics-value.js";
 import {generateFilmData} from "./mock/film-data.js";
 import {generateUserStatus} from "./mock/user-status.js";
 import {generateNavStats} from "./mock/main-nav.js";
-import {getRandomInteger} from "./utils.js";
+import {RenderPosition, render} from "./utils/render.js";
+import MovieList from "./presenter/movie-list.js";
 
 
-const CARD_QUANTITY = 70;
-const FILM_COUNT_PER_STEP = 5;
-const GROUP_COUNT_PER_STEP = 1;
-const EXTRA_CARDS_COUNT = 2;
-
-const TOP_RATED_TITLE = `Top rated`;
-const MOST_COMMENTED_TITLE = `Most commented`;
+const CARD_QUANTITY = 10;
 
 const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
@@ -27,58 +16,15 @@ const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 const currentUserStatus = generateUserStatus();
 
 const films = Array.from(Array(CARD_QUANTITY), generateFilmData);
-let transformedFilms = [];
-for (let i = 0; i < films.length; i += FILM_COUNT_PER_STEP) {
-  transformedFilms.push(films.slice(i, i + FILM_COUNT_PER_STEP));
-}
-const numberOfFilmsGroup = transformedFilms.length;
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const navStats = generateNavStats(films);
 
-render(headerElement, createProfileTemplate(currentUserStatus), `beforeend`);
-render(mainElement, createMainNavTemplate(navStats), `afterbegin`);
-render(mainElement, createSortListTemplate(), `beforeend`);
-render(mainElement, createFilmsBlockTemplate(), `beforeend`);
+render(headerElement, new Profile(currentUserStatus), RenderPosition.BEFOREEND);
+render(mainElement, new MainNav(navStats), RenderPosition.AFTERBEGIN);
 
-const filmsElement = mainElement.querySelector(`.films`);
-const filmList = filmsElement.querySelector(`.films-list`);
-const filmsContainer = filmList.querySelector(`.films-list__container`);
 
-transformedFilms[0].forEach((el) => render(filmsContainer, createFilmCard(el), `beforeend`));
+const filmsListPresenter = new MovieList(mainElement);
+filmsListPresenter.init(films);
 
-if (numberOfFilmsGroup > GROUP_COUNT_PER_STEP) {
-  let renderedFilmGroupCount = GROUP_COUNT_PER_STEP;
-  render(filmList, createShowMoreBtn(), `beforeend`);
 
-  const showMoreBtn = filmList.querySelector(`.films-list__show-more`);
-
-  showMoreBtn.addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    transformedFilms[renderedFilmGroupCount].forEach((el) => render(filmsContainer, createFilmCard(el), `beforeend`));
-    renderedFilmGroupCount += GROUP_COUNT_PER_STEP;
-
-    if (renderedFilmGroupCount >= numberOfFilmsGroup) {
-      showMoreBtn.remove();
-    }
-  });
-}
-
-const choseRandomCardsTemplate = (filmsData, cardquantity) => {
-  let template = ``;
-  for (let i = 0; i < cardquantity; i++) {
-    template += createFilmCard(films[getRandomInteger(0, filmsData.length - 1)]);
-  }
-  return template;
-};
-
-render(filmsElement, createExtraListTemplate(choseRandomCardsTemplate(films, EXTRA_CARDS_COUNT), TOP_RATED_TITLE), `beforeend`);
-render(filmsElement, createExtraListTemplate(choseRandomCardsTemplate(films, EXTRA_CARDS_COUNT), MOST_COMMENTED_TITLE), `beforeend`);
-
-render(footerStatisticsElement, createFooterStatisticsValueTemplate(films.length), `beforeend`);
-render(document.body, createPopupTemplate(films[0]), `beforeend`);
-
-document.querySelector(`.film-details`).style.position = `static`;
+render(footerStatisticsElement, new FooterStatistics(films.length).getElement(), RenderPosition.BEFOREEND);

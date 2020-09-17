@@ -1,5 +1,5 @@
-import {getRandomInteger} from "../utils.js";
-import {randomArrayFromParrentArray} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
+import {randomArrayFromParrentArray} from "../utils/common.js";
 
 const generateFilmTitle = () => {
   const filmsTitles = [

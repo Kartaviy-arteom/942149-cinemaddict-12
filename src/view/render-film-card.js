@@ -1,13 +1,12 @@
 import FilmCard from "./film-card.js";
 import Popup from "./popup.js";
-import {RenderPosition, render} from "../utils.js";
+import {RenderPosition, render} from "../utils/render.js";
 
 const ESC_KEY_CODE = 27;
 
 export const renderFilmCard = (filmListElement, filmData) => {
   const filmComponent = new FilmCard(filmData);
   const popupComponent = new Popup(filmData);
-  const popupCloseBtn = popupComponent.getElement().querySelector(`.film-details__close-btn`);
 
   const replaceFilmToPopup = () => {
     filmListElement.replaceChild(popupComponent.getElement(), filmComponent.getElement());
@@ -17,11 +16,10 @@ export const renderFilmCard = (filmListElement, filmData) => {
     filmListElement.replaceChild(filmComponent.getElement(), popupComponent.getElement());
   };
 
-  const closePopup = (evt) => {
-    evt.preventDefault();
+  const closePopup = () => {
     replacePopupToFilm();
     document.removeEventListener(`keydown`, onEscKeyDown);
-    popupCloseBtn.removeEventListener(`click`, onPopupCloseBtnClick);
+    popupComponent.removeOnCloseBtnClick();
   };
 
   const onEscKeyDown = (evt) => {
@@ -34,16 +32,15 @@ export const renderFilmCard = (filmListElement, filmData) => {
     closePopup(evt);
   };
 
-  render(filmListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
-  const filmTitle = filmComponent.getElement().querySelector(`.film-card__title`);
-  const filmPoster = filmComponent.getElement().querySelector(`.film-card__poster`);
-  const filmCommentsBlock = filmComponent.getElement().querySelector(`.film-card__comments`);
+  render(filmListElement, filmComponent, RenderPosition.BEFOREEND);
 
-  const popupTargets = [filmTitle, filmPoster, filmCommentsBlock];
-
-  popupTargets.forEach((el) => el.addEventListener(`click`, () => {
+  const openPopup = () => {
     replaceFilmToPopup();
-    popupCloseBtn.addEventListener(`click`, onPopupCloseBtnClick);
+    popupComponent.setOnCloseBtnClick(onPopupCloseBtnClick);
     document.addEventListener(`keydown`, onEscKeyDown);
-  }));
+  };
+
+  filmComponent.setOnFilmTitleClick(openPopup);
+  filmComponent.setOnFilmPosterClick(openPopup);
+  filmComponent.setOnFilmCommentsBlockClick(openPopup);
 };
