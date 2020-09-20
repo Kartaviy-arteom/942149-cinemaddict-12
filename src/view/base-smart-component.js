@@ -1,13 +1,13 @@
 import BaseComponent from "./base-component.js";
 
-export default class Smart extends BaseComponent {
+export default class BaseSmartComponent extends BaseComponent {
   constructor() {
     super();
     this._data = {};
   }
 
   restoreHandlers() {
-    throw new Error(`Red threat`);
+    throw new Error(`method not implemented`);
   }
 
   updateElement() {

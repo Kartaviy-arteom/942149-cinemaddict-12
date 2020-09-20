@@ -24,4 +24,9 @@ export default class BaseComponent {
   removeElement() {
     this._element = null;
   }
+
+  remove() {
+    this.getElement().remove();
+    this.removeElement();
+  }
 }

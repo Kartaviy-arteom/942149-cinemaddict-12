@@ -1,5 +1,5 @@
 import {formatDate} from "../utils/card.js";
-import Smart from "./smart.js";
+import BaseSmartComponent from "./base-smart-component.js";
 
 const createPopupTemplate = (data) => {
   const {title, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
@@ -152,7 +152,7 @@ const createPopupTemplate = (data) => {
   </section>`);
 };
 
-export default class Popup extends Smart {
+export default class Popup extends BaseSmartComponent {
   constructor(filmData) {
     super();
     this._filmData = filmData;

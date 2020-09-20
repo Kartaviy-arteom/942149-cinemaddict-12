@@ -48,17 +48,8 @@ export const replace = (newChild, oldChild) => {
   const parent = oldChild.parentElement;
 
   if (parent === null || oldChild === null || newChild === null) {
-    throw new Error(`Щэф, все пропало...`);
+    throw new Error(`Can't replace unexisting elements`);
   }
 
   parent.replaceChild(newChild, oldChild);
-};
-
-export const remove = (component) => {
-  if (component === null) {
-    return;
-  }
-
-  component.getElement().remove();
-  component.removeElement();
 };

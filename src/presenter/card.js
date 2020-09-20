@@ -1,6 +1,6 @@
 import FilmCard from "../view/film-card.js";
 import Popup from "../view/popup.js";
-import {RenderPosition, render, replace, remove} from "../utils/render.js";
+import {RenderPosition, render, replace} from "../utils/render.js";
 
 const ESC_KEY_CODE = 27;
 const Mode = {
@@ -84,7 +84,9 @@ export default class Card {
 
   _onEscKeyDown(evt) {
     if (evt.keyCode === ESC_KEY_CODE) {
-      this._closePopup();
+      this._changeData(Popup.parseDataToFilm(this._popupComponent._data));
+      this._replacePopupToFilm();
+
     }
   }
 
@@ -100,8 +102,8 @@ export default class Card {
   }
 
   destroy() {
-    remove(this._filmComponent);
-    remove(this._popupComponent);
+    this._filmComponent.remove();
+    this._popupComponent.remove();
   }
 
   _onWatchListBtnClick(evt) {

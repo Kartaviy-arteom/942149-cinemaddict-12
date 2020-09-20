@@ -48,10 +48,15 @@ export default class MovieList {
   }
 
   _onModeChange() {
-    Object
-      .values(this._filmPresenter)
-      .forEach((presenters) => presenters.forEach((el) => el.resetView()));
+    this._setDefautMode();
   }
+
+  _setDefautMode() {
+    Object
+    .values(this._filmPresenter)
+    .forEach((presenters) => presenters.forEach((el) => el.resetView()));
+  }
+
 
   _onFilmCardChange(updatedFilmCard) {
     this._filmsData = updateItem(this._filmsData, updatedFilmCard);
