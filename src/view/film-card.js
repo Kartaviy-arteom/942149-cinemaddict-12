@@ -89,4 +89,3 @@ export default class FilmCard extends BaseComponent {
     this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._callback.favoritesClick);
   }
 }
-
