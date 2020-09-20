@@ -139,6 +139,8 @@ const generateWriters = () => {
   return writers[getRandomInteger(0, writers.length - 1)];
 };
 
+let currentCommentID = 1;
+
 const generateComments = () => {
   const emojis = [`smile`, `sleeping`, `puke`, `angry`];
   const commentTexts = [
@@ -159,12 +161,14 @@ const generateComments = () => {
 
   for (let i = 0; i < commentsQuantity; i++) {
     const comment = {
-      emoji: emojis[getRandomInteger(0, emojis.length - 1)],
-      text: commentTexts[getRandomInteger(0, commentTexts.length - 1)],
+      id: currentCommentID,
       author: authors[getRandomInteger(0, authors.length - 1)],
-      data: new Date(getRandomInteger(0, new Date().getTime())),
+      comment: commentTexts[getRandomInteger(0, commentTexts.length - 1)],
+      emotion: emojis[getRandomInteger(0, emojis.length - 1)],
+      date: new Date(getRandomInteger(0, new Date().getTime())),
     };
     comments.push(comment);
+    currentCommentID++;
   }
   return comments;
 };

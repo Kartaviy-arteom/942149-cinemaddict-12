@@ -8,28 +8,10 @@ const createPopupTemplate = (data) => {
     return genre.map((genreType) => `<span class="film-details__genre">${genreType}</span>`).join(``);
   };
 
-  const createCommentListContent = () => {
-    return comments.map((comment) =>
-      `<li class="film-details__comment">
-        <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-smile">
-        </span>
-        <div>
-          <p class="film-details__comment-text">${comment.text}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${formatDate(comment.data, `YYYY/MM/DD HH:mm`)}</span>
-            <button class="film-details__comment-delete">Delete</button>
-          </p>
-        </div>
-      </li>`
-    ).join(``);
-  };
-
   const genreLabel = genre.length > 1 ? `Genres` : `Genre`;
 
   const genreList = createGenreList();
-  const commentListContent = createCommentListContent();
+
 
   const watchlistInputAttr = isInWatchList ? `checked` : ` `;
   const watchedInputAttr = isInWatched ? `checked` : ` `;
@@ -112,7 +94,7 @@ const createPopupTemplate = (data) => {
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-            ${commentListContent}
+
           </ul>
 
           <div class="film-details__new-comment">
@@ -164,6 +146,8 @@ export default class Popup extends BaseSmartComponent {
     this._OnWatchedClick = this._onWatchedClick.bind(this);
     this._onWatchingListClick = this._onWatchingListClick.bind(this);
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
+    this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
+    this.commentsCountElement = this.getElement().querySelector(`.film-details__comments-count`);
 
     this._setInnerHandlers();
     this.restoreHandlers();
@@ -268,5 +252,9 @@ export default class Popup extends BaseSmartComponent {
       }, false);
       this.getElement().querySelector(`#${this._data.emoji}`).checked = `checked`;
     }
+  }
+
+  updateCommentsCount() {
+    this.commentsCountElement.textContent = this._data.comments.length;
   }
 }

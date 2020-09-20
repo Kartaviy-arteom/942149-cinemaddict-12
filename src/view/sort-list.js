@@ -1,14 +1,14 @@
 import BaseComponent from "./base-component.js";
-import {sortType} from "../consts.js";
+import {SortType} from "../consts.js";
 
 const ACTIVE_BTN_CLASS_NAME = `sort__button--active`;
 
 const createSortListTemplate = () => {
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active" data-sort-type="${sortType.DEFAULT}">Sort by default</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${sortType.DATE}">Sort by date</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${sortType.RATING}">Sort by rating</a></li>
+      <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
     </ul>`
   );
 };
