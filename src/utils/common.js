@@ -12,9 +12,6 @@ export const randomArrayFromParrentArray = (array) => {
 };
 
 export const updateItem = (items, update) => {
-  if (!update) {
-    return;
-  }
   const index = items.findIndex((item) => item.id === update.id);
 
   if (index === -1) {
