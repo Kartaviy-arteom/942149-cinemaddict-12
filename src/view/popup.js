@@ -8,6 +8,26 @@ const createPopupTemplate = (data) => {
     return genre.map((genreType) => `<span class="film-details__genre">${genreType}</span>`).join(``);
   };
 
+  const createCommentListContent = () => {
+    return comments.map((comment) =>
+      `<li class="film-details__comment" data-id="${comment.id}">
+        <span class="film-details__comment-emoji">
+          ${comment.emotion ? `<img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">` : ``}
+        </span>
+        <div>
+          <p class="film-details__comment-text">${comment.comment ? comment.comment : ``}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${comment.author}</span>
+            <span class="film-details__comment-day">${formatDate(comment.date, `YYYY/MM/DD HH:mm`)}</span>
+            <button class="film-details__comment-delete">Delete</button>
+          </p>
+        </div>
+      </li>`
+    ).join(``);
+  };
+
+  const commentListContent = createCommentListContent();
+
   const genreLabel = genre.length > 1 ? `Genres` : `Genre`;
 
   const genreList = createGenreList();
@@ -94,7 +114,7 @@ const createPopupTemplate = (data) => {
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-
+          ${commentListContent}
           </ul>
 
           <div class="film-details__new-comment">
@@ -146,6 +166,7 @@ export default class Popup extends BaseSmartComponent {
     this._OnWatchedClick = this._onWatchedClick.bind(this);
     this._onWatchingListClick = this._onWatchingListClick.bind(this);
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
+    this._onCommentClick = this._onCommentClick.bind(this);
     this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
     this.commentsCountElement = this.getElement().querySelector(`.film-details__comments-count`);
 
@@ -213,11 +234,21 @@ export default class Popup extends BaseSmartComponent {
     this.setWatchedClickHandler(this._OnWatchedClick);
     this.setWatchListClickHandler(this._onWatchingListClick);
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`click`, this._onEmojiListClick);
+    this.getElement().querySelectorAll(`.film-details__comment`).forEach((el) => el.addEventListener(`click`, this._onCommentClick));
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setOnCloseBtnClick(this._callback.closeBtnClick);
+  }
+
+  _onCommentClick(evt) {
+    if (evt.target.classList.contains(`film-details__comment-delete`)) {
+      evt.currentTarget.removeEventListener(`click`, this._onCommentClick);
+      const index = this._data.comments.findIndex((item) => `${item.id}` === evt.currentTarget.dataset.id);
+      this._data.comments.splice(index, Math.max(index, 1));
+      this.updateElement();
+    }
   }
 
   _onUserCommentInput(evt) {
@@ -252,9 +283,5 @@ export default class Popup extends BaseSmartComponent {
       }, false);
       this.getElement().querySelector(`#${this._data.emoji}`).checked = `checked`;
     }
-  }
-
-  updateCommentsCount() {
-    this.commentsCountElement.textContent = this._data.comments.length;
   }
 }

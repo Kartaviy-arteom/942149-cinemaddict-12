@@ -1,26 +1,44 @@
 import BaseComponent from "./base-component.js";
 
-const createMainNavTemplate = ({watchlist, history, favorite}) => {
-  return (
-    `<nav class="main-navigation">
-      <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-        <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchlist}</span></a>
-        <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${history}</span></a>
-        <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorite}</span></a>
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
+  return (`<a href="#${type}" class="main-navigation__item ${currentFilterType === type ? `main-navigation__item--active` : ``}" data-type="${type}">${name}${type !== `all` ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`);
+};
+
+const createMainNavTemplate = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join(``);
+
+  return `<nav class="main-navigation">
+    <div class="main-navigation__items">
+      ${filterItemsTemplate}
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
-    </nav>`
-  );
+    </nav>`;
 };
 
 export default class MainNav extends BaseComponent {
-  constructor(categoriesData) {
+  constructor(filters, currentFilterType) {
     super();
-    this._categoriesData = categoriesData;
+    this._filters = filters;
+    this._currentFilter = currentFilterType;
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
 
   _getTemplate() {
-    return createMainNavTemplate(this._categoriesData);
+    return createMainNavTemplate(this._filters, this._currentFilter);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    if (evt.target.classList.contains(`main-navigation__item`)) {
+      evt.preventDefault();
+      this._callback.filterTypeChange(evt.target.dataset.type);
+    }
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
   }
 }

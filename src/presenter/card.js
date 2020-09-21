@@ -1,6 +1,6 @@
 import FilmCard from "../view/film-card.js";
 import Popup from "../view/popup.js";
-import Comment from "../view/comment.js";
+// import Comment from "../view/comment.js";
 import {RenderPosition, render, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../consts.js";
 
@@ -39,7 +39,6 @@ export default class Card {
 
     this._filmComponent = new FilmCard(filmData);
     this._popupComponent = new Popup(filmData);
-    this._addComments();
 
     this._filmComponent.setOnFilmTitleClick(this._openPopup);
     this._filmComponent.setOnFilmPosterClick(this._openPopup);
@@ -65,24 +64,6 @@ export default class Card {
 
     this._prevFilmComponent.getElement().remove();
     this._prevPopupComponent.getElement().remove();
-  }
-
-  _addComments() {
-    this._popupComponent._data.comments.forEach((el) => {
-      const commentComponent = new Comment(el);
-
-      const onDeleteBtnClick = () => {
-        this._popupComponent._data.comments = this._popupComponent._data.comments.filter((comment) => comment.id !== commentComponent._commentData.id);
-        commentComponent.remove();
-        this._popupComponent.updateData({
-          comments: this._popupComponent._data.comments
-        }, true);
-        this._popupComponent.updateCommentsCount();
-      };
-      commentComponent.setOnDeleteBtnClick(onDeleteBtnClick);
-      render(this._popupComponent.commentList, commentComponent, RenderPosition.BEFOREEND);
-
-    });
   }
 
   _replaceFilmToPopup() {
@@ -126,20 +107,21 @@ export default class Card {
 
   _onPopupSubmit(evt) {
     if (evt.ctrlKey && evt.keyCode === 13) {
-      if (this._popupComponent._data.userComment === null) {
+      if (this._popupComponent._data.userComment === null && this._popupComponent._data.emoji === null) {
         return;
       }
-      let addNewComment = () => {
-        this._popupComponent._data.comments[this._popupComponent._data.comments.length] = {
+      let createNewComment = () => {
+        return {
+          id: Date.now() + parseInt(Math.random() * 10000, 10),
           author: `user`,
-          comment: this._popupComponent._data.userComment,
+          comment: this._popupComponent._data.userComment ? this._popupComponent._data.userComment : null,
           emotion: this._popupComponent._data.emoji ? this._popupComponent._data.emoji.split(`emoji-`).join(``) : null,
           date: new Date(),
         };
       };
+      this._popupComponent._data.comments.push(createNewComment());
 
-      addNewComment();
-      this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
+      this._popupComponent.updateData({userComment: null, emoji: null}, false);
     }
   }
 

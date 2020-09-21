@@ -8,7 +8,7 @@ import {RenderPosition, render} from "../utils/render.js";
 import {SortType} from "../consts.js";
 import {sortTaskDown} from "../utils/card.js";
 import {UserAction, UpdateType} from "../consts.js";
-// import {updateItem} from "../utils/common.js";
+import {filter} from "../utils/filter.js";
 
 const FILM_COUNT_PER_STEP = 5;
 const GROUP_COUNT_PER_STEP = 1;
@@ -18,8 +18,9 @@ const extraListTitle = {
 };
 
 export default class MovieList {
-  constructor(boardWrapper, filmsModel) {
+  constructor(boardWrapper, filmsModel, filterModel) {
     this._filmsModel = filmsModel;
+    this._filterModel = filterModel;
     this._filmsContainer = null;
     this._boardWrappper = boardWrapper;
     this._noDataComponent = new NoData();
@@ -41,6 +42,7 @@ export default class MovieList {
 
     this._filmPresenter = {};
     this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -55,14 +57,18 @@ export default class MovieList {
   }
 
   _getFilms() {
+    const filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.getFilms();
+    const filtredFilms = filter[filterType](films);
+
     switch (this._currentSortType) {
       case SortType.DATE:
-        return this._filmsModel.getFilms().slice().sort(sortTaskDown);
+        return filtredFilms.sort(sortTaskDown);
       case SortType.RATING:
-        return this._filmsModel.getFilms().slice().sort((a, b) => b.ratingValue - a.ratingValue);
+        return filtredFilms.sort((a, b) => b.ratingValue - a.ratingValue);
     }
 
-    return this._filmsModel.getFilms();
+    return filtredFilms;
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -79,27 +85,15 @@ export default class MovieList {
     // }
   }
 
-  _handleModelEvent(updateType, data) {
+  _handleModelEvent(updateType) {
     switch (updateType) {
-      case UpdateType.PATCH:
-        for (let key in this._filmPresenter) {
-          if (Object.prototype.hasOwnProperty.call(this._filmPresenter, key)) {
-            (this._filmPresenter[key]).forEach((el) => {
-              if (el._filmData.id === data.id) {
-                el.init(data);
-              }
-            }
-            );
-          }
-        }
-        break;
       case UpdateType.MINOR:
         this._clearBoard();
         this._renderMovieList();
         break;
       case UpdateType.MAJOR:
         this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
-        this._renderBoard();
+        this._renderMovieList();
         break;
     }
   }
@@ -197,17 +191,19 @@ export default class MovieList {
   _renderMostCommentedBlock() {
     const filmData = this._getFilms();
     let extraListData = [];
+    if (this._mostCommentedComponent) {
+      this._mostCommentedComponent.remove();
+    }
+
     if (!filmData.every((el) => Object.keys(el.comments).length === 0)) {
       extraListData = filmData.slice()
         .sort((a, b) => Object.keys(b.comments).length - Object.keys(a.comments).length);
       extraListData = extraListData.slice(0, 2);
-      if ((extraListData[1].comments).length === 0) {
+      if (extraListData[1] && (extraListData[1].comments).length === 0) {
         extraListData = extraListData.slice(0, 1);
       }
 
-      if (this._mostCommentedComponent) {
-        this._mostCommentedComponent.remove();
-      }
+
       this._mostCommentedComponent = new ExtraList(extraListTitle.MOST_COMMENTED_TITLE);
 
       extraListData.forEach((el) => this._renderFilmCard(el, this._mostCommentedComponent.getFilmList()));
@@ -218,16 +214,17 @@ export default class MovieList {
   _renderTopRatedBlock() {
     const filmData = this._getFilms();
     let extraListData = [];
+    if (this._topRatedComponent) {
+      this._topRatedComponent.remove();
+    }
     if (filmData.every((el) => el.ratingValue !== 0)) {
       extraListData = filmData.slice()
         .sort((a, b) => b.ratingValue - a.ratingValue);
       extraListData = extraListData.slice(0, 2);
-      if (extraListData[1].ratingValue === 0) {
+      if (extraListData[1] && extraListData[1].ratingValue === 0) {
         extraListData = extraListData.slice(0, 1);
       }
-      if (this._topRatedComponent) {
-        this._topRatedComponent.remove();
-      }
+
       this._topRatedComponent = new ExtraList(extraListTitle.TOP_RATED_TITLE);
 
       extraListData.forEach((el) => this._renderFilmCard(el, this._topRatedComponent.getFilmList()));
@@ -281,6 +278,14 @@ export default class MovieList {
     }
     if (this._showMoreBtnComponent !== null) {
       this._showMoreBtnComponent.remove();
+    }
+
+    if (this._topRatedComponent) {
+      this._topRatedComponent.remove();
+    }
+
+    if (this._mostCommentedComponent) {
+      this._mostCommentedComponent.remove();
     }
 
     if (resetRenderedTaskCount) {
