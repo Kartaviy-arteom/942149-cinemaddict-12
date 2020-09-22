@@ -1,3 +1,4 @@
+import he from "he";
 import {formatDate} from "../utils/card.js";
 import BaseSmartComponent from "./base-smart-component.js";
 
@@ -15,7 +16,7 @@ const createPopupTemplate = (data) => {
           ${comment.emotion ? `<img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">` : ``}
         </span>
         <div>
-          <p class="film-details__comment-text">${comment.comment ? comment.comment : ``}</p>
+          <p class="film-details__comment-text">${comment.comment ? he.encode(comment.comment) : ``}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
             <span class="film-details__comment-day">${formatDate(comment.date, `YYYY/MM/DD HH:mm`)}</span>
