@@ -267,13 +267,14 @@ export default class Popup extends BaseSmartComponent {
 
   _onWatchedClick() {
     this.updateData({
-      isInWatched: !this._data.isInWatched
+      isInWatched: !this._data.isInWatched,
+      watchingDate: !this._data.isInWatched ? new Date() : null,
     }, true);
   }
 
   _onWatchingListClick() {
     this.updateData({
-      isInWatchList: !this._data.isInWatchList
+      isInWatchList: !this._data.isInWatchList,
     }, true);
   }
 

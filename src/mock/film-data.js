@@ -187,8 +187,12 @@ const generateActors = () => {
   return randomArrayFromParrentArray(actors);
 };
 
+const getRandomDateInYear = (year) => {
+  return new Date(year, getRandomInteger(0, 12), getRandomInteger(1, 31));
+};
+
 export const generateFilmData = () => {
-  return {
+  const filmData = {
     id: generateId(),
     title: generateFilmTitle(),
     poster: generatePoster(),
@@ -203,8 +207,12 @@ export const generateFilmData = () => {
     country: generateCountry(),
     ageRate: generateAgeRate(),
     isInWatchList: !!(getRandomInteger(0, 1)),
+    watchingDate: null,
     isInWatched: !!(getRandomInteger(0, 1)),
     isInFavorites: !!(getRandomInteger(0, 1)),
     actors: generateActors(),
   };
+
+  Boolean(filmData.isInWatched) ? filmData.watchingDate = getRandomDateInYear(2020) : null;
+  return filmData;
 };

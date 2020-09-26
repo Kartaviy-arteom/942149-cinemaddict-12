@@ -1,6 +1,28 @@
 import BaseComponent from "./base-component.js";
 
-const createProfileTemplate = (userStatus) => {
+const UserStatus = {
+  NO_STATUS: ``,
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`,
+};
+
+const createProfileTemplate = (watchedFilmsCount) => {
+  let userStatus;
+  if (watchedFilmsCount === 0) {
+    userStatus = UserStatus.NO_STATUS;
+  }
+  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
+    userStatus = UserStatus.NOVICE;
+  }
+
+  if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
+    userStatus = UserStatus.FAN;
+  }
+
+  if (watchedFilmsCount > 20) {
+    userStatus = UserStatus.MOVIE_BUFF;
+  }
   return (
     `<section class="header__profile profile">
       <p class="profile__rating">${userStatus}</p>
@@ -10,12 +32,12 @@ const createProfileTemplate = (userStatus) => {
 };
 
 export default class Profile extends BaseComponent {
-  constructor(statusData) {
+  constructor(filmsCount) {
     super();
-    this._statusData = statusData;
+    this._filmsCount = filmsCount;
   }
 
   _getTemplate() {
-    return createProfileTemplate(this._statusData);
+    return createProfileTemplate(this._filmsCount);
   }
 }

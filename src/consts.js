@@ -19,3 +19,5 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`,
 };
+
+export const STATS_ITEM = `Stats`;

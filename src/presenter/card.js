@@ -1,6 +1,5 @@
 import FilmCard from "../view/film-card.js";
 import Popup from "../view/popup.js";
-// import Comment from "../view/comment.js";
 import {RenderPosition, render, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../consts.js";
 
@@ -137,7 +136,7 @@ export default class Card {
 
   _onWatchedBtnClick(evt) {
     evt.preventDefault();
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Object.assign({}, this._filmData, {isInWatched: !this._filmData.isInWatched}));
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Object.assign({}, this._filmData, {isInWatched: !this._filmData.isInWatched, watchingDate: !this._filmData.isInWatched ? new Date() : null}));
   }
 
   _onFavoritesBtnClick(evt) {

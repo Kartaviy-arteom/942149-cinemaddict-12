@@ -41,19 +41,29 @@ export default class MovieList {
     this._onModeChange = this._onModeChange.bind(this);
 
     this._filmPresenter = {};
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init() {
+  init(MainNavPresenter) {
 
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
     this._transformFilmsData();
     this._numberOfFilmsGroup = this._transformedFilmsData.length;
 
-    this._renderSortList();
-    this._sortListComponent.setSortTypeChangeHandler(this._changeSortType);
-
     this._renderMovieList();
+
+    this._MainNavPresenter = MainNavPresenter;
+
+    this._MainNavPresenter.getBoard(this);
+  }
+
+  destroy() {
+    this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+    this._filmsBlock.remove();
+    this._sortListComponent.remove();
+
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getFilms() {
@@ -88,6 +98,7 @@ export default class MovieList {
   _handleModelEvent(updateType) {
     switch (updateType) {
       case UpdateType.MINOR:
+
         this._clearBoard();
         this._renderMovieList();
         break;
@@ -166,6 +177,8 @@ export default class MovieList {
   }
 
   _renderMovieList() {
+    this._renderSortList();
+    this._sortListComponent.setSortTypeChangeHandler(this._changeSortType);
     render(this._boardWrappper, this._filmsBlock, RenderPosition.BEFOREEND);
     this._filmList = this._filmsBlock.getElement().querySelector(`.films-list`);
     const filmsContainer = this._filmList.querySelector(`.films-list__container`);
@@ -244,10 +257,6 @@ export default class MovieList {
     this._renderMovieList();
   }
 
-  _renderBoard() {
-
-  }
-
   _sortCards(chosenSortType) {
     switch (chosenSortType) {
       case SortType.DATE:
@@ -280,10 +289,13 @@ export default class MovieList {
       this._showMoreBtnComponent.remove();
     }
 
+    if (this._noDataComponent !== null) {
+      this._noDataComponent.remove();
+    }
+
     if (this._topRatedComponent) {
       this._topRatedComponent.remove();
     }
-
     if (this._mostCommentedComponent) {
       this._mostCommentedComponent.remove();
     }
@@ -296,6 +308,9 @@ export default class MovieList {
     }
 
     if (resetSortType) {
+      if (this._sortListComponent !== null) {
+        this._sortListComponent.remove();
+      }
       this._currentSortType = SortType.DEFAULT;
     }
   }
