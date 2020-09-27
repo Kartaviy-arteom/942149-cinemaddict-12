@@ -194,10 +194,12 @@ const getRandomDateInYear = (year) => {
 export const generateFilmData = () => {
   const filmData = {
     id: generateId(),
+    comments: generateComments(),
     title: generateFilmTitle(),
+    alternativeTitle: generateFilmTitle(),
     poster: generatePoster(),
     description: generateDescription(),
-    comments: generateComments(),
+
     ratingValue: generateRating(),
     productionData: generateProductionYear(),
     runtime: generateRuntime(),

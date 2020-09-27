@@ -9,8 +9,10 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`,
 };
 
 export const FilterType = {
@@ -21,3 +23,17 @@ export const FilterType = {
 };
 
 export const STATS_ITEM = `Stats`;
+
+export const UserStatus = {
+  NO_STATUS: ``,
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`,
+};
+
+export const StatusLevel = {
+  NO_STATUS: 0,
+  NOVICE: 10,
+  FAN: 20,
+  MOVIE_BUFF: 21,
+};

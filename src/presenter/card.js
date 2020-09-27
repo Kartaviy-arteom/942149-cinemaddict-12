@@ -3,6 +3,7 @@ import Popup from "../view/popup.js";
 import {RenderPosition, render, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../consts.js";
 
+
 const ESC_KEY_CODE = 27;
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -10,12 +11,13 @@ const Mode = {
 };
 
 export default class Card {
-  constructor(filmListElement, changeData, changeMode) {
+  constructor(filmListElement, changeData, changeMode, api) {
     this._filmListElement = filmListElement;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._filmComponent = null;
     this._popupComponent = null;
+    this._api = api;
 
     this._mode = Mode.DEFAULT;
 
@@ -37,7 +39,7 @@ export default class Card {
     this._prevPopupComponent = this._popupComponent;
 
     this._filmComponent = new FilmCard(filmData);
-    this._popupComponent = new Popup(filmData);
+
 
     this._filmComponent.setOnFilmTitleClick(this._openPopup);
     this._filmComponent.setOnFilmPosterClick(this._openPopup);
@@ -46,6 +48,10 @@ export default class Card {
     this._filmComponent.setWatchListClickHandler(this._onWatchListBtnClick);
     this._filmComponent.setWatchedClickHandler(this._onWatchedBtnClick);
     this._filmComponent.setFavoritesClickHandler(this._onFavoritesBtnClick);
+
+    this._onPopupFavoritesClick = this._onPopupFavoritesClick.bind(this);
+    this._onPopupWatchedClick = this._onPopupWatchedClick.bind(this);
+    this._onPopupWatchingListClick = this._onPopupWatchingListClick.bind(this);
 
     if (this._prevFilmComponent === null || this._prevPopupComponent === null) {
       render(this._filmListElement, this._filmComponent, RenderPosition.BEFOREEND);
@@ -98,10 +104,45 @@ export default class Card {
   }
 
   _openPopup() {
-    this._replaceFilmToPopup();
-    this._popupComponent.setOnCloseBtnClick(this._onPopupCloseBtnClick);
-    document.addEventListener(`keydown`, this._onEscKeyDown);
-    document.addEventListener(`keydown`, this._onPopupSubmit);
+    this._api.getComments(this._filmData)
+      .then((data) => {
+        this._popupComponent = new Popup(data);
+        this._replaceFilmToPopup();
+        this._popupComponent.setOnCloseBtnClick(this._onPopupCloseBtnClick);
+        this._popupComponent.setFavoritesClickHandler(this._onPopupFavoritesClick);
+        this._popupComponent.setWatchedClickHandler(this._onPopupWatchedClick);
+        this._popupComponent.setWatchListClickHandler(this._onPopupWatchingListClick);
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        document.addEventListener(`keydown`, this._onPopupSubmit);
+      });
+  }
+
+  _onPopupFavoritesClick() {
+    let data = this._popupComponent.getData();
+    this._popupComponent.updateData({
+      isInFavorites: !data.isInFavorites
+    }, false);
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
+    this._popupComponent.updateElement(data);
+  }
+
+  _onPopupWatchingListClick() {
+    let data = this._popupComponent.getData();
+    this._popupComponent.updateData({
+      isInWatchList: !data.isInWatchList,
+    }, false);
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
+    this._popupComponent.updateElement(data);
+  }
+
+  _onPopupWatchedClick() {
+    let data = this._popupComponent.getData();
+    this._popupComponent.updateData({
+      isInWatched: !data.isInWatched,
+      watchingDate: !data.isInWatched ? new Date() : null,
+    }, false);
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
+    this._popupComponent.updateElement(data);
   }
 
   _onPopupSubmit(evt) {
@@ -126,7 +167,9 @@ export default class Card {
 
   destroy() {
     this._filmComponent.remove();
-    this._popupComponent.remove();
+    if (this._popupComponent) {
+      this._popupComponent.remove();
+    }
   }
 
   _onWatchListBtnClick(evt) {

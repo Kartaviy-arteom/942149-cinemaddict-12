@@ -1,32 +1,13 @@
 import BaseComponent from "./base-component.js";
-
-const UserStatus = {
-  NO_STATUS: ``,
-  NOVICE: `novice`,
-  FAN: `fan`,
-  MOVIE_BUFF: `movie buff`,
-};
+import {UserStatus} from "../consts.js";
+import {getUserStatus} from "../utils/common.js";
 
 const createProfileTemplate = (watchedFilmsCount) => {
-  let userStatus;
-  if (watchedFilmsCount === 0) {
-    userStatus = UserStatus.NO_STATUS;
-  }
-  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
-    userStatus = UserStatus.NOVICE;
-  }
-
-  if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
-    userStatus = UserStatus.FAN;
-  }
-
-  if (watchedFilmsCount > 20) {
-    userStatus = UserStatus.MOVIE_BUFF;
-  }
+  const userStatus = getUserStatus(watchedFilmsCount);
   return (
     `<section class="header__profile profile">
       <p class="profile__rating">${userStatus}</p>
-      <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+      ${userStatus !== UserStatus.NO_STATUS ? `<img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">` : ``}
     </section>`
   );
 };

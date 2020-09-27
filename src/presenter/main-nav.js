@@ -68,7 +68,7 @@ export default class MainNav {
 
   _onFormStatisticChange(evt) {
     this._statisticViewComponent.remove();
-    this._statisticViewComponent = new StatisticView(this._filmsModel.getFilms(), evt.target.value);
+    this._statisticViewComponent = new StatisticView(this._watchedFilmsData, evt.target.value);
     this._statisticViewComponent.setFormChangeHandler(this._onFormStatisticChange);
     this._renderStatistic();
   }

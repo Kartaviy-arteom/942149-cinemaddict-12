@@ -1,5 +1,7 @@
 import {createElement} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export default class BaseComponent {
   constructor() {
     if (new.target === BaseComponent) {
@@ -28,5 +30,15 @@ export default class BaseComponent {
   remove() {
     this.getElement().remove();
     this.removeElement();
+  }
+
+  shake(callback) {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = ``;
+      if (callback) {
+        callback();
+      }
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

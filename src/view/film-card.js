@@ -9,7 +9,7 @@ const getShortText = (text) => {
   return shortDescription;
 };
 
-export const createFilmCard = ({title, poster, description, comments, ratingValue, productionData, runtime, genre, isInWatchList, isInWatched, isInFavorites}) => {
+export const createFilmCard = ({title, poster, description, commentsId, ratingValue, productionData, runtime, genre, isInWatchList, isInWatched, isInFavorites}) => {
   const shortDescription = getShortText(description);
   return (`<article class="film-card">
             <h3 class="film-card__title">${title}</h3>
@@ -19,9 +19,9 @@ export const createFilmCard = ({title, poster, description, comments, ratingValu
               <span class="film-card__duration">${formatTime(runtime)}</span>
               <span class="film-card__genre">${genre[0]}</span>
             </p>
-            <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+            <img src="./${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${shortDescription}</p>
-            <a class="film-card__comments">${comments.length} comments</a>
+            <a class="film-card__comments">${commentsId.length} comments</a>
             <form class="film-card__controls">
               <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isInWatchList ? `film-card__controls-item--active` : ``}">Add to watchlist</button>
               <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isInWatched ? `film-card__controls-item--active` : ``}">Mark as watched</button>

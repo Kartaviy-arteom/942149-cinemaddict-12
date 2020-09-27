@@ -2,6 +2,8 @@ import moment from "moment";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import BaseSmartComponent from "./base-smart-component.js";
+import {UserStatus} from "../consts.js";
+import {getUserStatus} from "../utils/common.js";
 
 const BAR_HEIGHT = 50;
 const Period = {
@@ -89,16 +91,17 @@ const transformDuration = (minutesNumber) => {
   return moment.utc(moment.duration(minutesNumber, `minutes`).asMilliseconds()).format(`H mm`);
 };
 
-const createStatistic = (filmData, maxCountGenreName, interval = `all-time`) => {
+const createStatistic = (filmData, maxCountGenreName, totalWatchedCount, interval = `all-time`) => {
   let totalDuration = calculateTotalDuration(filmData);
   totalDuration = transformDuration(totalDuration).split(` `);
+  const userStatus = getUserStatus(totalWatchedCount);
 
   return (
     `<section class="statistic">
       <p class="statistic__rank">
         Your rank
-        <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">Sci-Fighter</span>
+        ${userStatus !== UserStatus.NO_STATUS ? `<img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">` : ``}
+        <span class="statistic__rank-label">${userStatus}</span>
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -148,6 +151,7 @@ export default class Statistic extends BaseSmartComponent {
     super();
     this._data = data.slice();
     this._currentPeriod = currentPeriod;
+    this._totalWatchedFilmCount = this._data.length;
     this._data = this._selectFilmsFromPeriod(this._data, currentPeriod);
     this._genresCount = [];
     this._genreNames = new Set();
@@ -161,7 +165,7 @@ export default class Statistic extends BaseSmartComponent {
   }
 
   _getTemplate() {
-    return this._currentPeriod ? createStatistic(this._data, this._maxCountGenreName, this._currentPeriod) : createStatistic(this._data, this._maxCountGenreName);
+    return this._currentPeriod ? createStatistic(this._data, this._maxCountGenreName, this._totalWatchedFilmCount, this._currentPeriod) : createStatistic(this._data, this._maxCountGenreName, this._totalWatchedFilmCount);
   }
 
   setFormChangeHandler(callback) {

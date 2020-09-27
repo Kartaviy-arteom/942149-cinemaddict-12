@@ -4,6 +4,7 @@ import ShowMoreBtn from "../view/show-more-btn.js";
 import FilmsBlock from "../view/films-block.js";
 import ExtraList from "../view/extra-list.js";
 import SortList from "../view/sort-list.js";
+import LoadingView from "../view/loading.js";
 import {RenderPosition, render} from "../utils/render.js";
 import {SortType} from "../consts.js";
 import {sortTaskDown} from "../utils/card.js";
@@ -18,10 +19,11 @@ const extraListTitle = {
 };
 
 export default class MovieList {
-  constructor(boardWrapper, filmsModel, filterModel) {
+  constructor(boardWrapper, filmsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._filmsContainer = null;
+    this._api = api;
     this._boardWrappper = boardWrapper;
     this._noDataComponent = new NoData();
     this._sortListComponent = new SortList();
@@ -32,6 +34,8 @@ export default class MovieList {
     this._renderedFilmGroupCount = GROUP_COUNT_PER_STEP;
 
     this._transformedFilmsData = [];
+    this._isLoading = true;
+    this._loadingComponent = new LoadingView();
     this._changeSortType = this._changeSortType.bind(this);
     this._onFilmCardChange = this._onFilmCardChange.bind(this);
 
@@ -69,13 +73,15 @@ export default class MovieList {
   _getFilms() {
     const filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();
-    const filtredFilms = filter[filterType](films);
+    const filtredFilms = filter[filterType](films.slice());
 
     switch (this._currentSortType) {
       case SortType.DATE:
-        return filtredFilms.sort(sortTaskDown);
+        filtredFilms.sort(sortTaskDown);
+        break;
       case SortType.RATING:
-        return filtredFilms.sort((a, b) => b.ratingValue - a.ratingValue);
+        filtredFilms.sort((a, b) => b.ratingValue - a.ratingValue);
+        break;
     }
 
     return filtredFilms;
@@ -84,25 +90,40 @@ export default class MovieList {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
+        break;
+      case UserAction.GET_COMMENTS:
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
-
-    // switch (actionType) {
-    //   case UserAction.DELETE_COMMENT:
-    //     this._filmsModel.deleteComment(updateType, update);
-    //     break;
-    // }
   }
 
-  _handleModelEvent(updateType) {
+  _handleModelEvent(updateType, data) {
     switch (updateType) {
+      case UpdateType.PATCH:
+        for (let key in this._filmPresenter) {
+          if (Object.prototype.hasOwnProperty.call(this._filmPresenter, key)) {
+            this._filmPresenter[key].forEach((el) => {
+              if (data.id === el.id) {
+                el[data.id].init(data);
+              }
+            });
+          }
+        }
+        break;
       case UpdateType.MINOR:
-
         this._clearBoard();
         this._renderMovieList();
         break;
       case UpdateType.MAJOR:
+        this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+        this._renderMovieList();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        this._loadingComponent.remove();
         this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
         this._renderMovieList();
         break;
@@ -135,12 +156,16 @@ export default class MovieList {
     render(this._boardWrappper, this._noDataComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderLoading() {
+    render(this._filmsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderSortList() {
     render(this._boardWrappper, this._sortListComponent, RenderPosition.BEFOREEND);
   }
 
   _renderFilmCard(cardData, container = this._filmsContainer) {
-    this._cardComponent = new Card(container, this._handleViewAction, this._onModeChange);
+    this._cardComponent = new Card(container, this._handleViewAction, this._onModeChange, this._api);
     this._cardComponent.init(cardData);
     if (!this._filmPresenter[cardData.id]) {
       this._filmPresenter[cardData.id] = [this._cardComponent];
@@ -184,6 +209,11 @@ export default class MovieList {
     const filmsContainer = this._filmList.querySelector(`.films-list__container`);
     this._filmsContainer = filmsContainer;
 
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
 
     if (this._getFilms().length === 0) {
       render(this._filmList, this._noDataComponent, RenderPosition.AFTERBEGIN);
@@ -208,11 +238,11 @@ export default class MovieList {
       this._mostCommentedComponent.remove();
     }
 
-    if (!filmData.every((el) => Object.keys(el.comments).length === 0)) {
+    if (!filmData.every((el) => Object.keys(el.commentsId).length === 0)) {
       extraListData = filmData.slice()
-        .sort((a, b) => Object.keys(b.comments).length - Object.keys(a.comments).length);
+        .sort((a, b) => b.commentsId.length - a.commentsId.length);
       extraListData = extraListData.slice(0, 2);
-      if (extraListData[1] && (extraListData[1].comments).length === 0) {
+      if (extraListData[1] && (extraListData[1].commentsId).length === 0) {
         extraListData = extraListData.slice(0, 1);
       }
 

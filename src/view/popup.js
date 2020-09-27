@@ -3,7 +3,7 @@ import {formatDate} from "../utils/card.js";
 import BaseSmartComponent from "./base-smart-component.js";
 
 const createPopupTemplate = (data) => {
-  const {title, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
+  const {title, alternativeTitle, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
 
   const createGenreList = () => {
     return genre.map((genreType) => `<span class="film-details__genre">${genreType}</span>`).join(``);
@@ -46,7 +46,7 @@ const createPopupTemplate = (data) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+            <img class="film-details__poster-img" src="./${poster}" alt="">
 
             <p class="film-details__age">${ageRate}</p>
           </div>
@@ -55,7 +55,7 @@ const createPopupTemplate = (data) => {
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
                 <h3 class="film-details__title">${title}</h3>
-                <p class="film-details__title-original">${title}</p>
+                <p class="film-details__title-original">${alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
@@ -163,9 +163,7 @@ export default class Popup extends BaseSmartComponent {
     this._onCloseBtnClick = this._onCloseBtnClick.bind(this);
 
     this._onUserCommentInput = this._onUserCommentInput.bind(this);
-    this._onFavoritesClick = this._onFavoritesClick.bind(this);
-    this._OnWatchedClick = this._onWatchedClick.bind(this);
-    this._onWatchingListClick = this._onWatchingListClick.bind(this);
+
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
     this._onCommentClick = this._onCommentClick.bind(this);
     this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
@@ -177,6 +175,10 @@ export default class Popup extends BaseSmartComponent {
 
   _getTemplate() {
     return createPopupTemplate(this._data);
+  }
+
+  getData() {
+    return this._data;
   }
 
   _onCloseBtnClick(evt) {
@@ -231,9 +233,9 @@ export default class Popup extends BaseSmartComponent {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.film-details__comment-input`).addEventListener(`input`, this._onUserCommentInput);
-    this.setFavoritesClickHandler(this._onFavoritesClick);
-    this.setWatchedClickHandler(this._OnWatchedClick);
-    this.setWatchListClickHandler(this._onWatchingListClick);
+    this.setFavoritesClickHandler(this._callback.favoritesClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+    this.setWatchListClickHandler(this._callback.watchListClick);
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`click`, this._onEmojiListClick);
     this.getElement().querySelectorAll(`.film-details__comment`).forEach((el) => el.addEventListener(`click`, this._onCommentClick));
   }
@@ -259,24 +261,11 @@ export default class Popup extends BaseSmartComponent {
     }, true);
   }
 
-  _onFavoritesClick() {
-    this.updateData({
-      isInFavorites: !this._data.isInFavorites
-    }, true);
-  }
-
-  _onWatchedClick() {
-    this.updateData({
-      isInWatched: !this._data.isInWatched,
-      watchingDate: !this._data.isInWatched ? new Date() : null,
-    }, true);
-  }
-
-  _onWatchingListClick() {
-    this.updateData({
-      isInWatchList: !this._data.isInWatchList,
-    }, true);
-  }
+  // _onWatchingListClick() {
+  //   this.updateData({
+  //     isInWatchList: !this._data.isInWatchList,
+  //   }, true);
+  // }
 
   _onEmojiListClick(evt) {
     if (evt.target.classList.contains(`film-details__emoji-item`)) {
