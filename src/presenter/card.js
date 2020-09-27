@@ -160,7 +160,6 @@ export default class Card {
         };
       };
       this._popupComponent._data.comments.push(createNewComment());
-
       this._popupComponent.updateData({userComment: null, emoji: null}, false);
     }
   }
