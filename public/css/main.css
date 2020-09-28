@@ -542,6 +542,10 @@ button {
   background-color: #212126;
 }
 
+.film-details__new-comment--disabled {
+  pointer-events: none;
+}
+
 .form-details__top-container {
   padding-top: 30px;
   padding-left: 10px;

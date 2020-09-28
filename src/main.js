@@ -10,7 +10,7 @@ import {UpdateType} from "./consts.js";
 import Api from "./api.js";
 
 
-const AUTHORIZATION = `Basic hd65erv7dsWEbfskll3a5n`;
+const AUTHORIZATION = `Basic hd65erv7ddddsWEbfsckll3a5n`;
 const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
 const headerElement = document.querySelector(`.header`);

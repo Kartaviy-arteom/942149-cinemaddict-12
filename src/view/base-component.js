@@ -32,10 +32,10 @@ export default class BaseComponent {
     this.removeElement();
   }
 
-  shake(callback) {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  shake(el = this.getElement(), callback) {
+    el.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
-      this.getElement().style.animation = ``;
+      el.style.animation = ``;
       if (callback) {
         callback();
       }

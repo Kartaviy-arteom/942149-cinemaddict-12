@@ -48,7 +48,6 @@ export default class MovieList {
   }
 
   init(MainNavPresenter) {
-
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
     this._transformFilmsData();
@@ -87,11 +86,16 @@ export default class MovieList {
     return filtredFilms;
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, errorIndicationElement) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilm(updateType, response);
+        })
+        .catch(() => {
+          if (errorIndicationElement) {
+            errorIndicationElement.shake();
+          }
         });
         break;
       case UserAction.GET_COMMENTS:
@@ -100,19 +104,8 @@ export default class MovieList {
     }
   }
 
-  _handleModelEvent(updateType, data) {
+  _handleModelEvent(updateType) {
     switch (updateType) {
-      case UpdateType.PATCH:
-        for (let key in this._filmPresenter) {
-          if (Object.prototype.hasOwnProperty.call(this._filmPresenter, key)) {
-            this._filmPresenter[key].forEach((el) => {
-              if (data.id === el.id) {
-                el[data.id].init(data);
-              }
-            });
-          }
-        }
-        break;
       case UpdateType.MINOR:
         this._clearBoard();
         this._renderMovieList();

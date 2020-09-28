@@ -1,5 +1,6 @@
 import FilmCard from "../view/film-card.js";
 import Popup from "../view/popup.js";
+import FilmsModel from "../model/films.js";
 import {RenderPosition, render, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../consts.js";
 
@@ -22,6 +23,7 @@ export default class Card {
     this._mode = Mode.DEFAULT;
 
     this._openPopup = this._openPopup.bind(this);
+    this._deleteComment = this._deleteComment.bind(this);
 
     this._onPopupCloseBtnClick = this._onPopupCloseBtnClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
@@ -112,56 +114,93 @@ export default class Card {
         this._popupComponent.setFavoritesClickHandler(this._onPopupFavoritesClick);
         this._popupComponent.setWatchedClickHandler(this._onPopupWatchedClick);
         this._popupComponent.setWatchListClickHandler(this._onPopupWatchingListClick);
+        this._popupComponent.setCommentBlockDeleteHandler(this._deleteComment);
         document.addEventListener(`keydown`, this._onEscKeyDown);
         document.addEventListener(`keydown`, this._onPopupSubmit);
-      });
+      })
+      .catch(() => this._filmComponent.shake());
   }
 
-  _onPopupFavoritesClick() {
-    let data = this._popupComponent.getData();
-    this._popupComponent.updateData({
-      isInFavorites: !data.isInFavorites
-    }, false);
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
-    this._popupComponent.updateElement(data);
+  _onPopupFavoritesClick(evt) {
+    evt.preventDefault();
+    this._changeUserDetails(this._changeToOppositeFavoritesData);
   }
 
-  _onPopupWatchingListClick() {
-    let data = this._popupComponent.getData();
-    this._popupComponent.updateData({
-      isInWatchList: !data.isInWatchList,
-    }, false);
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
-    this._popupComponent.updateElement(data);
+  _onPopupWatchingListClick(evt) {
+    evt.preventDefault();
+    this._changeUserDetails(this._changeToOppositeWatchingListsData);
   }
 
-  _onPopupWatchedClick() {
+  _onPopupWatchedClick(evt) {
+    evt.preventDefault();
+    this._changeUserDetails(this._changeToOppositeWatchedData);
+  }
+
+  _changeUserDetails(changeDataFunction) {
     let data = this._popupComponent.getData();
-    this._popupComponent.updateData({
-      isInWatched: !data.isInWatched,
-      watchingDate: !data.isInWatched ? new Date() : null,
-    }, false);
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, Popup.parseDataToFilm(this._popupComponent._data));
-    this._popupComponent.updateElement(data);
+    changeDataFunction(data);
+
+    this._api.updateFilm(Popup.parseFilmToData(data)).then((response) => {
+      this._popupComponent.updateData(Object.assign({}, Popup.parseDataToFilm(response), {userComment: data.userComment, emoji: data.emoji}), false);
+    })
+    .catch(() => {
+      this._popupComponent.shake();
+      changeDataFunction(data);
+    });
+  }
+
+  _changeToOppositeWatchedData(data) {
+    data.watchingDate = !data.isInWatched ? new Date() : null;
+    data.isInWatched = !data.isInWatched;
+  }
+
+  _changeToOppositeFavoritesData(data) {
+    data.isInFavorites = !data.isInFavorites;
+  }
+
+  _changeToOppositeWatchingListsData(data) {
+    data.isInWatchList = !data.isInWatchList;
   }
 
   _onPopupSubmit(evt) {
+    let data = this._popupComponent.getData();
     if (evt.ctrlKey && evt.keyCode === 13) {
-      if (this._popupComponent._data.userComment === null && this._popupComponent._data.emoji === null) {
+      if (data.userComment === null || data.emoji === null) {
         return;
       }
-      let createNewComment = () => {
-        return {
-          id: Date.now() + parseInt(Math.random() * 10000, 10),
-          author: `user`,
-          comment: this._popupComponent._data.userComment ? this._popupComponent._data.userComment : null,
-          emotion: this._popupComponent._data.emoji ? this._popupComponent._data.emoji.split(`emoji-`).join(``) : null,
-          date: new Date(),
-        };
-      };
-      this._popupComponent._data.comments.push(createNewComment());
-      this._popupComponent.updateData({userComment: null, emoji: null}, false);
+      const newComment = this._createNewComment();
+      this._popupComponent.blockForm();
+      this._api.postComment(newComment, data.id).then((response) => {
+        let newData = FilmsModel.adaptToClient(response.movie);
+        newData = FilmsModel.adaptCommentToClient(response.comments, newData);
+        this._popupComponent.updateData(Object.assign({}, newData, {userComment: null, emoji: null}), false);
+      })
+      .catch(() => {
+        this._popupComponent.shakeForm();
+        this._popupComponent.unblockForm();
+      });
     }
+  }
+
+  _deleteComment(commentId) {
+    this._api.deleteComment(commentId).then(() => {
+      // let data = this._popupComponent.getData();
+      // const index = data.comments.findIndex((comment) => comment.id === commentId);
+      // data.comments = [
+      //   ...data.comments.slice(0, index),
+      //   ...this._films.slice(index + 1)
+      // ];
+      // this._popupComponent.updateData(Object.assign({}, data), false);
+    })
+    .catch(err => alert(err));
+  }
+
+  _createNewComment() {
+    return {
+      comment: this._popupComponent._data.userComment ? this._popupComponent._data.userComment : null,
+      emotion: this._popupComponent._data.emoji ? this._popupComponent._data.emoji.split(`emoji-`).join(``) : null,
+      date: new Date(),
+    };
   }
 
   destroy() {
@@ -173,16 +212,25 @@ export default class Card {
 
   _onWatchListBtnClick(evt) {
     evt.preventDefault();
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Object.assign({}, this._filmData, {isInWatchList: !this._filmData.isInWatchList}));
+    this._changeData(UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmData, {isInWatchList: !this._filmData.isInWatchList}),
+        this._filmComponent);
   }
 
   _onWatchedBtnClick(evt) {
     evt.preventDefault();
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Object.assign({}, this._filmData, {isInWatched: !this._filmData.isInWatched, watchingDate: !this._filmData.isInWatched ? new Date() : null}));
+    this._changeData(UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmData, {isInWatched: !this._filmData.isInWatched, watchingDate: !this._filmData.isInWatched ? new Date() : null}),
+        this._filmComponent);
   }
 
   _onFavoritesBtnClick(evt) {
     evt.preventDefault();
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Object.assign({}, this._filmData, {isInFavorites: !this._filmData.isInFavorites}));
+    this._changeData(UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmData, {isInFavorites: !this._filmData.isInFavorites}),
+        this._filmComponent);
   }
 }

@@ -165,12 +165,14 @@ export default class Popup extends BaseSmartComponent {
     this._onUserCommentInput = this._onUserCommentInput.bind(this);
 
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
-    this._onCommentClick = this._onCommentClick.bind(this);
+
     this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
+
     this.commentsCountElement = this.getElement().querySelector(`.film-details__comments-count`);
 
     this._setInnerHandlers();
     this.restoreHandlers();
+
   }
 
   _getTemplate() {
@@ -237,7 +239,7 @@ export default class Popup extends BaseSmartComponent {
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setWatchListClickHandler(this._callback.watchListClick);
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`click`, this._onEmojiListClick);
-    this.getElement().querySelectorAll(`.film-details__comment`).forEach((el) => el.addEventListener(`click`, this._onCommentClick));
+    this.setCommentBlockDeleteHandler(this._callback.commentBlockDelete);
   }
 
   restoreHandlers() {
@@ -245,13 +247,14 @@ export default class Popup extends BaseSmartComponent {
     this.setOnCloseBtnClick(this._callback.closeBtnClick);
   }
 
-  _onCommentClick(evt) {
-    if (evt.target.classList.contains(`film-details__comment-delete`)) {
-      evt.currentTarget.removeEventListener(`click`, this._onCommentClick);
-      const index = this._data.comments.findIndex((item) => `${item.id}` === evt.currentTarget.dataset.id);
-      this._data.comments.splice(index, Math.max(index, 1));
-      this.updateElement();
-    }
+  setCommentBlockDeleteHandler(callback) {
+    this._callback.commentBlockDelete = (evt) => {
+      evt.preventDefault();
+      const index = evt.target.closest(`.film-details__comment`).currentTarget.dataset.id;
+      callback(index);
+    };
+    const commentDeleteBtns = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    commentDeleteBtns.forEach((el) => el.addEventListener(`click`, this._callback.commentBlockDelete));
   }
 
   _onUserCommentInput(evt) {
@@ -261,12 +264,6 @@ export default class Popup extends BaseSmartComponent {
     }, true);
   }
 
-  // _onWatchingListClick() {
-  //   this.updateData({
-  //     isInWatchList: !this._data.isInWatchList,
-  //   }, true);
-  // }
-
   _onEmojiListClick(evt) {
     if (evt.target.classList.contains(`film-details__emoji-item`)) {
       this.updateData({
@@ -274,5 +271,29 @@ export default class Popup extends BaseSmartComponent {
       }, false);
       this.getElement().querySelector(`#${this._data.emoji}`).checked = `checked`;
     }
+  }
+
+  _getForm() {
+    return this.getElement().querySelector(`.film-details__new-comment`);
+  }
+
+  blockForm() {
+    this._form = this._getForm();
+    this._form.classList.add(`film-details__new-comment--disabled`);
+  }
+
+  unblockForm() {
+    if (!this._form) {
+      this._form = this._getForm();
+    }
+    this._form.classList.remove(`film-details__new-comment--disabled`);
+  }
+
+  shakeForm() {
+    if (!this._form) {
+      this._form = this._getForm();
+    }
+    const form = this._form;
+    this.shake(form);
   }
 }
