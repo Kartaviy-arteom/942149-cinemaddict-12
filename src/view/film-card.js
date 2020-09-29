@@ -47,17 +47,20 @@ export default class FilmCard extends BaseComponent {
 
   setOnFilmTitleClick(callback) {
     this._callback.filmTitleClick = callback;
-    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, this._onFilmTitleClick);
+    this._filmTitle = this.getElement().querySelector(`.film-card__title`);
+    this._filmTitle.addEventListener(`click`, this._onFilmTitleClick);
   }
 
   setOnFilmPosterClick(callback) {
     this._callback.filmPosterClick = callback;
-    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, this._onFilmPosterClick);
+    this._filmPoster = this.getElement().querySelector(`.film-card__poster`);
+    this._filmPoster.addEventListener(`click`, this._onFilmPosterClick);
   }
 
   setOnFilmCommentsBlockClick(callback) {
     this._callback.filmCommentsBlockClick = callback;
-    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._onFilmCommentsBlockClick);
+    this._commentsBlock = this.getElement().querySelector(`.film-card__comments`);
+    this._commentsBlock.addEventListener(`click`, this._onFilmCommentsBlockClick);
   }
 
   _onFilmTitleClick(evt) {
@@ -77,16 +80,33 @@ export default class FilmCard extends BaseComponent {
 
   setWatchListClickHandler(callback) {
     this._callback.watchListClick = callback;
-    this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._callback.watchListClick);
+    this._watchlistBtn = this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`);
+    this._watchlistBtn.addEventListener(`click`, this._callback.watchListClick);
   }
 
   setWatchedClickHandler(callback) {
     this._callback.watchedClick = callback;
-    this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._callback.watchedClick);
+    this._watchedBtn = this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`);
+    this._watchedBtn.addEventListener(`click`, this._callback.watchedClick);
   }
 
   setFavoritesClickHandler(callback) {
     this._callback.favoritesClick = callback;
-    this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._callback.favoritesClick);
+    this._favoriteBtn = this.getElement().querySelector(`.film-card__controls-item--favorite`);
+    this._favoriteBtn.addEventListener(`click`, this._callback.favoritesClick);
+  }
+
+  _removeHandlers() {
+    this._filmTitle.removeEventListener(`click`, this._onFilmTitleClick);
+    this._filmPoster.removeEventListener(`click`, this._onFilmPosterClick);
+    this._commentsBlock.removeEventListener(`click`, this._onFilmCommentsBlockClick);
+    this._watchlistBtn.removeEventListener(`click`, this._callback.watchListClick);
+    this._watchedBtn.removeEventListener(`click`, this._callback.watchedClick);
+    this._favoriteBtn.removeEventListener(`click`, this._callback.favoritesClick);
+  }
+
+  remove() {
+    super.remove();
+    this._removeHandlers();
   }
 }

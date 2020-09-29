@@ -5,11 +5,15 @@ import {RenderPosition, render, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../consts.js";
 
 
-const ESC_KEY_CODE = 27;
+const KeyCode = {
+  ESC: 27,
+  ENTER: 13
+};
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
 };
+const EMOJI_PREFIX = `emoji-`;
 
 export default class Card {
   constructor(filmListElement, changeData, changeMode, api) {
@@ -82,7 +86,7 @@ export default class Card {
   _replacePopupToFilm() {
     this._filmListElement.replaceChild(this._filmComponent.getElement(), this._popupComponent.getElement());
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._popupComponent.removeOnCloseBtnClick();
+    this._popupComponent.removeHandlers();
     document.removeEventListener(`keydown`, this._onPopupSubmit);
     this._mode = Mode.DEFAULT;
   }
@@ -94,7 +98,7 @@ export default class Card {
   }
 
   _onEscKeyDown(evt) {
-    if (evt.keyCode === ESC_KEY_CODE) {
+    if (evt.keyCode === KeyCode.ESC) {
       this._replacePopupToFilm();
       this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, Popup.parseDataToFilm(this._popupComponent._data));
     }
@@ -164,7 +168,7 @@ export default class Card {
 
   _onPopupSubmit(evt) {
     let data = this._popupComponent.getData();
-    if (evt.ctrlKey && evt.keyCode === 13) {
+    if (evt.ctrlKey && evt.keyCode === KeyCode.ENTER) {
       if (data.userComment === null || data.emoji === null) {
         return;
       }
@@ -183,22 +187,27 @@ export default class Card {
   }
 
   _deleteComment(commentId) {
+    let data = this._popupComponent.getData();
+    data.deletedCommentId = commentId;
+    this._popupComponent.updateData(Object.assign({}, data), false);
     this._api.deleteComment(commentId).then(() => {
-      // let data = this._popupComponent.getData();
-      // const index = data.comments.findIndex((comment) => comment.id === commentId);
-      // data.comments = [
-      //   ...data.comments.slice(0, index),
-      //   ...this._films.slice(index + 1)
-      // ];
-      // this._popupComponent.updateData(Object.assign({}, data), false);
+      data.comments = data.comments.filter((comment) => comment.id !== commentId);
+      data.commentsId = data.commentsId.filter((id) => id !== commentId);
     })
-    .catch(err => alert(err));
+    .catch(() => {
+      this._popupComponent.shake();
+    })
+    .finally(() => {
+      data.deletedCommentId = null;
+      this._popupComponent.updateData(Object.assign({}, data), false);
+    });
   }
 
   _createNewComment() {
+    const data = this._popupComponent.getData();
     return {
-      comment: this._popupComponent._data.userComment ? this._popupComponent._data.userComment : null,
-      emotion: this._popupComponent._data.emoji ? this._popupComponent._data.emoji.split(`emoji-`).join(``) : null,
+      comment: data.userComment ? data.userComment : null,
+      emotion: data.emoji ? data.emoji.split(EMOJI_PREFIX).join(``) : null,
       date: new Date(),
     };
   }

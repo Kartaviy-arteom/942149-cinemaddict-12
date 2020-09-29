@@ -5,6 +5,13 @@ import {render, RenderPosition, replace} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
 import {FilterType, UpdateType, STATS_ITEM} from "../consts.js";
 
+const FilterName = {
+  ALL: `All`,
+  WATCHLIST: `Watchlist`,
+  HISTORY: `History`,
+  FAVORITES: `Favorites`
+};
+
 export default class MainNav {
   constructor(mainNavContainer, filterModel, filmsModel) {
     this._mainNavContainer = mainNavContainer;
@@ -103,22 +110,22 @@ export default class MainNav {
     return [
       {
         type: FilterType.ALL,
-        name: `All`,
+        name: FilterName.ALL,
         count: filter[FilterType.ALL](films).length
       },
       {
         type: FilterType.WATCHLIST,
-        name: `Watchlist`,
+        name: FilterName.WATCHLIST,
         count: filter[FilterType.WATCHLIST](films).length
       },
       {
         type: FilterType.HISTORY,
-        name: `History`,
+        name: FilterName.HISTORY,
         count: filter[FilterType.HISTORY](films).length
       },
       {
         type: FilterType.FAVORITES,
-        name: `Favorites`,
+        name: FilterName.FAVORITES,
         count: filter[FilterType.FAVORITES](films).length
       },
     ];

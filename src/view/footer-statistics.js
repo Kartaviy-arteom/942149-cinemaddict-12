@@ -1,6 +1,6 @@
 import BaseComponent from "./base-component.js";
 
-const createFooterStatisticsValueTemplate = (number) => {
+const createFooterStatisticsTemplate = (number) => {
   return (`<p>${number} movies inside</p>`);
 };
 
@@ -10,6 +10,6 @@ export default class FooterStatistics extends BaseComponent {
     this._quantity = quantity;
   }
   _getTemplate() {
-    return createFooterStatisticsValueTemplate(this._quantity);
+    return createFooterStatisticsTemplate(this._quantity);
   }
 }

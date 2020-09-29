@@ -3,7 +3,7 @@ import {formatDate} from "../utils/card.js";
 import BaseSmartComponent from "./base-smart-component.js";
 
 const createPopupTemplate = (data) => {
-  const {title, alternativeTitle, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji} = data;
+  const {title, alternativeTitle, poster, description, comments, ratingValue, productionData, runtime, genre, director, writers, country, ageRate, isInWatchList, isInWatched, isInFavorites, actors, userComment, emoji, deletedCommentId} = data;
 
   const createGenreList = () => {
     return genre.map((genreType) => `<span class="film-details__genre">${genreType}</span>`).join(``);
@@ -20,7 +20,7 @@ const createPopupTemplate = (data) => {
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
             <span class="film-details__comment-day">${formatDate(comment.date, `YYYY/MM/DD HH:mm`)}</span>
-            <button class="film-details__comment-delete">Delete</button>
+            <button class="film-details__comment-delete "${comment.id === deletedCommentId ? `disabled>Deleting...` : `>Delete`}</button>
           </p>
         </div>
       </li>`
@@ -169,6 +169,9 @@ export default class Popup extends BaseSmartComponent {
     this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
 
     this.commentsCountElement = this.getElement().querySelector(`.film-details__comments-count`);
+    this._watchlistBtn = null;
+    this._watchedBtn = null;
+    this._favoriteBtn = null;
 
     this._setInnerHandlers();
     this.restoreHandlers();
@@ -194,23 +197,31 @@ export default class Popup extends BaseSmartComponent {
     this._closeBtn.addEventListener(`click`, this._onCloseBtnClick);
   }
 
-  removeOnCloseBtnClick() {
+  removeHandlers() {
     this._closeBtn.removeEventListener(`click`, this._onCloseBtnClick);
+    this._watchlistBtn.removeEventListener(`click`, this._callback.watchListClick);
+    this._watchedBtn.removeEventListener(`click`, this._callback.watchedClick);
+    this._favoriteBtn.removeEventListener(`click`, this._callback.favoritesClick);
+    const commentDeleteBtns = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    commentDeleteBtns.forEach((el) => el.addEventListener(`click`, this._callback.commentBlockDelete));
   }
 
   setWatchListClickHandler(callback) {
     this._callback.watchListClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._callback.watchListClick);
+    this._watchlistBtn = this.getElement().querySelector(`.film-details__control-label--watchlist`);
+    this._watchlistBtn.addEventListener(`click`, this._callback.watchListClick);
   }
 
   setWatchedClickHandler(callback) {
     this._callback.watchedClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._callback.watchedClick);
+    this._watchedBtn = this.getElement().querySelector(`.film-details__control-label--watched`);
+    this._watchedBtn.addEventListener(`click`, this._callback.watchedClick);
   }
 
   setFavoritesClickHandler(callback) {
     this._callback.favoritesClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._callback.favoritesClick);
+    this._favoriteBtn = this.getElement().querySelector(`.film-details__control-label--favorite`);
+    this._favoriteBtn.addEventListener(`click`, this._callback.favoritesClick);
   }
 
   static parseFilmToData(film) {
@@ -220,6 +231,7 @@ export default class Popup extends BaseSmartComponent {
         {
           userComment: null,
           emoji: null,
+          deletedCommentId: null,
         }
     );
   }
@@ -229,6 +241,7 @@ export default class Popup extends BaseSmartComponent {
 
     delete data.userComment;
     delete data.emoji;
+    delete data.deletedCommentId;
 
     return data;
   }
@@ -239,7 +252,8 @@ export default class Popup extends BaseSmartComponent {
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setWatchListClickHandler(this._callback.watchListClick);
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`click`, this._onEmojiListClick);
-    this.setCommentBlockDeleteHandler(this._callback.commentBlockDelete);
+    const commentDeleteBtns = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    commentDeleteBtns.forEach((el) => el.addEventListener(`click`, this._callback.commentBlockDelete));
   }
 
   restoreHandlers() {
@@ -250,8 +264,8 @@ export default class Popup extends BaseSmartComponent {
   setCommentBlockDeleteHandler(callback) {
     this._callback.commentBlockDelete = (evt) => {
       evt.preventDefault();
-      const index = evt.target.closest(`.film-details__comment`).dataset.id;
-      callback(index);
+      const commentID = evt.target.closest(`.film-details__comment`).dataset.id;
+      callback(commentID);
     };
     const commentDeleteBtns = this.getElement().querySelectorAll(`.film-details__comment-delete`);
     commentDeleteBtns.forEach((el) => el.addEventListener(`click`, this._callback.commentBlockDelete));

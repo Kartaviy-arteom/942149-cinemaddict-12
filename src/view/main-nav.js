@@ -51,6 +51,17 @@ export default class MainNav extends BaseComponent {
 
   setStatsBtnClick(callback) {
     this._callback.statsBtnClick = callback;
-    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._callback.statsBtnClick);
+    this._additionalBlock = this.getElement().querySelector(`.main-navigation__additional`);
+    this._additionalBlock.addEventListener(`click`, this._callback.statsBtnClick);
+  }
+
+  _removeHandlers() {
+    this.getElement().removeEventListener(`click`, this._filterTypeChangeHandler);
+    this._additionalBlock.removeEventListener(`click`, this._callback.statsBtnClick);
+  }
+
+  remove() {
+    super.remove();
+    this._removeHandlers();
   }
 }

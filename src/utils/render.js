@@ -4,10 +4,6 @@ export const RenderPosition = {
   BEFOREEND: `beforeend`
 };
 
-export const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 export const render = (container, element, place) => {
   if (container instanceof BaseComponent) {
     container = container.getElement();

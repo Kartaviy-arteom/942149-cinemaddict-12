@@ -170,7 +170,8 @@ export default class Statistic extends BaseSmartComponent {
 
   setFormChangeHandler(callback) {
     this._callback.change = callback;
-    this.getElement().querySelector(`form.statistic__filters`).addEventListener(`change`, this._callback.change);
+    this._statisticFormFiltersElement = this.getElement().querySelector(`form.statistic__filters`);
+    this._statisticFormFiltersElement.addEventListener(`change`, this._callback.change);
   }
 
   _selectFilmsFromPeriod(data, interval) {
@@ -226,6 +227,7 @@ export default class Statistic extends BaseSmartComponent {
 
   remove() {
     super.remove();
+    this._statisticFormFiltersElement.removeEventListener(`change`, this._callback.change);
     if (this._genreChart !== null) {
       this._genreChart = null;
     }
