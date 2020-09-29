@@ -88,12 +88,14 @@ const calculateTotalDuration = (films) => {
   return duration;
 };
 const transformDuration = (minutesNumber) => {
-  return moment.utc(moment.duration(minutesNumber, `minutes`).asMilliseconds()).format(`H mm`);
+  const hours = Math.floor(minutesNumber / 60);
+  const minutes = minutesNumber % 60;
+  return [hours, minutes];
 };
 
 const createStatistic = (filmData, maxCountGenreName, totalWatchedCount, interval = `all-time`) => {
   let totalDuration = calculateTotalDuration(filmData);
-  totalDuration = transformDuration(totalDuration).split(` `);
+  totalDuration = transformDuration(totalDuration);
   const userStatus = getUserStatus(totalWatchedCount);
 
   return (
@@ -226,8 +228,11 @@ export default class Statistic extends BaseSmartComponent {
   }
 
   remove() {
+    if (this._statisticFormFiltersElement) {
+      this._statisticFormFiltersElement.removeEventListener(`change`, this._callback.change);
+    }
     super.remove();
-    this._statisticFormFiltersElement.removeEventListener(`change`, this._callback.change);
+
     if (this._genreChart !== null) {
       this._genreChart = null;
     }
