@@ -250,7 +250,7 @@ export default class Popup extends BaseSmartComponent {
   setCommentBlockDeleteHandler(callback) {
     this._callback.commentBlockDelete = (evt) => {
       evt.preventDefault();
-      const index = evt.target.closest(`.film-details__comment`).currentTarget.dataset.id;
+      const index = evt.target.closest(`.film-details__comment`).dataset.id;
       callback(index);
     };
     const commentDeleteBtns = this.getElement().querySelectorAll(`.film-details__comment-delete`);
