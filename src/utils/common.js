@@ -45,4 +45,4 @@ export const getUserStatus = (watchedFilmsCount) => {
   }
 
   return userStatus;
-}
+};
