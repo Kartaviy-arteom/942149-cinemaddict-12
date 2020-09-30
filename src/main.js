@@ -28,7 +28,7 @@ api.getFilms()
     filmsModel.setFilms(UpdateType.INIT, []);
   })
   .finally(() => {
-    let footerStatistic = new FooterStatistics(filmsModel.getFilms().length).getElement();
+    const footerStatistic = new FooterStatistics(filmsModel.getFilms().length).getElement();
     render(footerStatisticsElement, footerStatistic, RenderPosition.BEFOREEND);
   });
 

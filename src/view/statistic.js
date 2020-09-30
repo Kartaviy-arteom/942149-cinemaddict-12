@@ -177,7 +177,7 @@ export default class Statistic extends BaseSmartComponent {
   }
 
   _selectFilmsFromPeriod(data, interval) {
-    let startDate = new Date();
+    const startDate = new Date();
 
     switch (interval) {
       case Period.TODAY:
@@ -219,7 +219,7 @@ export default class Statistic extends BaseSmartComponent {
 
   _getMaxCountGenrename() {
     let prevMaxCount = 0;
-    for (let key in this._genres) {
+    for (const key in this._genres) {
       if (this._genres[key] > prevMaxCount) {
         this._maxCountGenreName = key;
         prevMaxCount = this._genres[key];
@@ -245,7 +245,7 @@ export default class Statistic extends BaseSmartComponent {
 
     const genreNames = Array.from(this._genreNames);
 
-    let statisticCtx = this.getElement().querySelector(`.statistic__chart`);
+    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
     statisticCtx.height = BAR_HEIGHT * genreNames.length;
 
     this._genreChart = genreNames.length ? renderChart(statisticCtx, genreNames, this._genresCount) : null;

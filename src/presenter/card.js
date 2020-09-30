@@ -141,7 +141,7 @@ export default class Card {
   }
 
   _changeUserDetails(changeDataFunction) {
-    let data = this._popupComponent.getData();
+    const data = this._popupComponent.getData();
     changeDataFunction(data);
 
     this._api.updateFilm(Popup.parseFilmToData(data)).then((response) => {
@@ -167,7 +167,7 @@ export default class Card {
   }
 
   _onPopupSubmit(evt) {
-    let data = this._popupComponent.getData();
+    const data = this._popupComponent.getData();
     if (evt.ctrlKey && evt.keyCode === KeyCode.ENTER) {
       if (data.userComment === null || data.emoji === null) {
         return;
@@ -187,7 +187,7 @@ export default class Card {
   }
 
   _deleteComment(commentId) {
-    let data = this._popupComponent.getData();
+    const data = this._popupComponent.getData();
     data.deletedCommentId = commentId;
     this._popupComponent.updateData(Object.assign({}, data), false);
     this._api.deleteComment(commentId).then(() => {
