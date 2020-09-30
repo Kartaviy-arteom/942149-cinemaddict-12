@@ -1,10 +1,12 @@
 import {formatTime} from "../utils/card.js";
 import BaseComponent from "./base-component.js";
 
+const MAX_TEXT_LENGTH = 140;
+
 const getShortText = (text) => {
   let shortDescription = text;
-  if (text.length > 140) {
-    shortDescription = `${shortDescription.substring(0, 139)}...`;
+  if (text.length > MAX_TEXT_LENGTH) {
+    shortDescription = `${shortDescription.substring(0, MAX_TEXT_LENGTH - 1)}...`;
   }
   return shortDescription;
 };

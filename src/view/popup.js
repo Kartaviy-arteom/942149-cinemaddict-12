@@ -158,7 +158,6 @@ const createPopupTemplate = (data) => {
 export default class Popup extends BaseSmartComponent {
   constructor(filmData) {
     super();
-    this._filmData = filmData;
     this._data = Popup.parseFilmToData(filmData);
     this._onCloseBtnClick = this._onCloseBtnClick.bind(this);
 
@@ -166,9 +165,6 @@ export default class Popup extends BaseSmartComponent {
 
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
 
-    this.commentList = this.getElement().querySelector(`.film-details__comments-list`);
-
-    this.commentsCountElement = this.getElement().querySelector(`.film-details__comments-count`);
     this._watchlistBtn = null;
     this._watchedBtn = null;
     this._favoriteBtn = null;
